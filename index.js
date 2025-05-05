@@ -5,17 +5,34 @@ Vue.createApp({
           Player: "",
           Muderer: true,
           Winner: false,
+          player1Id: null,
+          player2Id: null,
         
           Players: [
-              { Id: 1, Player: "Peter", Muderer: true },
-              { Id: 2, Player: "John", Muderer: false },
-              { Id: 3, Player: "Mary", Muderer: false },
-              { Id: 4, Player: "Sophie", Muderer: false },
-              { Id: 5, Player: "Tom", Muderer: false },
+              { Id: 1, Player: "Peter", role: 'Murderer' },
+              { Id: 2, Player: "John", role: 'Player' },
+              { Id: 3, Player: "Mary", role: 'Player' },
+              { Id: 4, Player: "Sophie", role: 'Player' },
+              { Id: 5, Player: "Tom", role: 'Player' },
           ],
+          result: ''
       };
     },
     methods: {
-      
-    }
-  }).mount('#app');
+      determineWinner() {
+          const player1 = this.Players.find(player => player.Id === Number(this.player1Id));
+          const player2 = this.Players.find(player => player.Id === Number(this.player2Id));
+
+          if (!player1 || !player2) {
+              this.result = 'Invalid player IDs. Please try again.';
+              return;
+          }
+
+          if (player1.role === 'Murderer' || player2.role === 'Murderer') {
+              this.result = 'The Murderer wins!';
+          } else {
+              this.result = 'The two players win!';
+          }
+      }
+  }
+}).mount('#app');

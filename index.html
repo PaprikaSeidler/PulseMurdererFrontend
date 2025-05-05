@@ -6,16 +6,25 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <title></title>
+    <title>Game Status</title>
 </head>
 <body>
-<h1>Auto Whos Winner System.</h1>
-<div id="app">
+<h1>Auto Who's Winner System</h1>
+<div id="app" class="container mt-4">
+    <h2>Enter Remaining Players:</h2>
+    <div class="form-group">
+        <label for="player1">Player 1 ID:</label>
+        <input type="number" id="player1" v-model="player1Id" class="form-control" placeholder="Enter Player 1 ID">
+    </div>
+    <div class="form-group">
+        <label for="player2">Player 2 ID:</label>
+        <input type="number" id="player2" v-model="player2Id" class="form-control" placeholder="Enter Player 2 ID">
+    </div>
+    <button class="btn btn-primary mt-2" @click="determineWinner">Determine Winner</button>
+
+    <h3 class="mt-4">Result:</h3>
+    <p v-if="result" class="alert alert-info">{{ result }}</p>
 </div>
-<th class="th"></th>
-<th class="th"></th>
-<th class="th"></th>
-<th class="th"></th>
 
 <script src="index.js"></script>
 </body>
