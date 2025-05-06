@@ -7,6 +7,7 @@ Vue.createApp({
           Winner: false,
           player1Id: null,
           player2Id: null,
+          voteCount: 0,
         
           Players: [
               { Id: 1, Player: "Peter", role: 'Murderer' },
@@ -33,6 +34,9 @@ Vue.createApp({
           } else {
               this.result = 'The two players win!';
           }
-      }
-  }
+      },
+      vote() {
+          
+      },
+    }
 }).mount('#app');
