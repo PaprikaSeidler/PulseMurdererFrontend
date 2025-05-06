@@ -36,13 +36,14 @@ Vue.createApp({
                 this.result = 'The two players win!';
             }
         },
-        vote(id) {
-            if(voterButtonClicked === false){
-                voterButtonClicked = true
+        async vote(id) {
+            if(this.voterButtonClicked === false){
+                this.voterButtonClicked = true
             }
-            else if(voterButtonClicked === true){
-                voterButtonClicked = false
+            else if(this.voterButtonClicked === true){
+                this.voterButtonClicked = false
             }
+            const button =  document.getElementById(voterButton)
         },
     }
 }).mount('#app');
