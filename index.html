@@ -20,7 +20,7 @@
         <label for="player2">Player 2 ID:</label>
         <input type="number" id="player2" v-model="player2Id" class="form-control" placeholder="Enter Player 2 ID">
     </div>
-    <button class="btn btn-primary mt-2" @click="determineWinner">Determine Winner</button>
+    <button class="btn btn-primary mt-2" id="button" @click="determineWinner">Determine Winner</button>
 
     <h3 class="mt-4">Result:</h3>
     <p v-if="result" class="alert alert-info">{{ result }}</p>
