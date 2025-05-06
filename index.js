@@ -11,11 +11,11 @@ Vue.createApp({
             voterButtonClicked: false,
 
             Players: [
-                { id: 1, name: "Peter", role: 'Murderer' },
-                { id: 2, name: "John", role: 'name' },
-                { id: 3, name: "Mary", role: 'name' },
-                { id: 4, name: "Sophie", role: 'name' },
-                { id: 5, name: "Tom", role: 'name' },
+                { id: 1, name: "Peter", role: 'Murderer',clicked: false },
+                { id: 2, name: "John", role: 'name',clicked:false },
+                { id: 3, name: "Mary", role: 'name',clicked:false },
+                { id: 4, name: "Sophie", role: 'name',clicked:false },
+                { id: 5, name: "Tom", role: 'name',clicked:false },
             ],
             result: ''
         };
@@ -37,13 +37,12 @@ Vue.createApp({
             }
         },
         async vote(id) {
-            if(this.voterButtonClicked === false){
-                this.voterButtonClicked = true
-            }
-            else if(this.voterButtonClicked === true){
-                this.voterButtonClicked = false
-            }
-            const button =  document.getElementById(voterButton)
+            this.Players.forEach( player => {
+                player.clicked = false
+            })
+
+            const player = this.Players.find( p => p.id === id)
+            player.clicked = !player.clicked
         },
     }
 }).mount('#app');
