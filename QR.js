@@ -10,7 +10,7 @@ Vue.createApp({
   methods: {
     async getQR() {
         try {
-        const redirectURL = 'https://pulsemurderer-bqaqacc5feh8h3aa.northeurope-01.azurewebsites.net/PlayerPage.html'
+        const redirectURL = 'https://pulsemurderer-bqaqacc5feh8h3aa.northeurope-01.azurewebsites.net/Join.html'
         const qrCodeUrl = baseUrl + encodeURIComponent(redirectURL);
 
         const qrCodeImage = document.getElementById('qrCodeImage');
