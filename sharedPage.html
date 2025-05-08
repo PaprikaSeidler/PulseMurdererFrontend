@@ -1,19 +1,35 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
         <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-        <title>Document</title>
+        <title>SharedPage</title>
     </head>
     <body>
-        <div id="app" class="container">
-            <div class="container">
-                <h5 class="container mt-4" align="center">Heartbeat:</h5>
-            </div>
+        <h1 class="container" align="center">Puls:</h1>
+        <div id="data" class="container mt-10" align="center">
         </div>
+        <script>
+        const ws = new WebSocket("ws://localhost:8080");
+
+        ws.onopen = function() {
+            document.getElementById("data").innerText = "Connected";
+        };
+
+        ws.onmessage = function(event) {
+            document.getElementById("data").innerText = event.data.replace(/\.\d+/g,'')
+        };
+
+        ws.onerror = function(error) {
+            console.log("WebSocket Error: " + error);
+        };
+
+        ws.onclose = function() {
+            document.getElementById("data").innerText = "Disconnected";
+        };
+        </script>
     </body>
-    <script src="index.js"></script>
 </html>
