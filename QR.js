@@ -1,9 +1,8 @@
-const baseUrl = 'https://image-charts.com/chart?cht=qr&chs=300x300&chl='
+const baseUrl = 'https://image-charts.com/chart?cht=qr&chs=200x200&chl='
 
 Vue.createApp({
   data() {
     return {
-        qrCodeImage: null,
         qrCodeUrl: null,
     };
   },
@@ -11,7 +10,7 @@ Vue.createApp({
     async getQR() {
         try {
         const redirectURL = 'https://pulsemurderer-bqaqacc5feh8h3aa.northeurope-01.azurewebsites.net/Join.html'
-        const qrCodeUrl = baseUrl + encodeURIComponent(redirectURL);
+        this.qrCodeUrl = baseUrl + encodeURIComponent(redirectURL);
 
         const qrCodeImage = document.getElementById('qrCodeImage');
         qrCodeImage.src = qrCodeUrl;
