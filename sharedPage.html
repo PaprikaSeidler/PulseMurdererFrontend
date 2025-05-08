@@ -1,35 +1,32 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-        <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-        <title>SharedPage</title>
-    </head>
-    <body>
-        <h1 class="container" align="center">Puls:</h1>
-        <div id="data" class="container mt-10" align="center">
-        </div>
-        <script>
-        const ws = new WebSocket("wss://pulsemurderer-bqaqacc5feh8h3aa.northeurope-01.azurewebsites.net/");
+<head>
+    <title>UDP Data Display</title>
+</head>
+<body>
+    <h1>UDP Data Display</h1>
+    <div id="data">Connecting...</div>
+    <script>
+        // Replace with your server's WebSocket URL
+        const ws = new WebSocket("ws://localhost:8080");
 
         ws.onopen = function() {
             document.getElementById("data").innerText = "Connected";
         };
 
         ws.onmessage = function(event) {
-            document.getElementById("data").innerText = event.data.replace(/\.\d+/g,'')
+            document.getElementById("data").innerText = event.data.replace(/\.\d+/g, '');
         };
 
         ws.onerror = function(error) {
             console.log("WebSocket Error: " + error);
+            document.getElementById("data").innerText = "Error";
         };
 
         ws.onclose = function() {
             document.getElementById("data").innerText = "Disconnected";
         };
-        </script>
-    </body>
+    </script>
+</body>
 </html>
+
