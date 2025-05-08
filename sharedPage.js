@@ -5,9 +5,27 @@ const WebSocket = require("ws");
 
 const server = dgram.createSocket("udp4");
 const httpServer = http.createServer();
-const wss = new WebSocket.Server({ server: httpServer });
+const wss = new WebSocket.Server({ server });
 
 let udpData = "";
+
+wss.on(`connection`, (ws) =>{
+    console.log(`Client connected`)
+
+    ws.on("message", (message) =>{
+        console.log(`Revieved: ${message}`)
+
+        wss.clients.forEach((client) =>{
+            if(client !== ws && client.readyState === WebSocket.OPEN){
+                client.send(message)
+            }
+        })
+    })
+
+    ws.on('close', () =>{
+        console.log('Client disconnected')
+    })
+})
 
 server.on("error", (err) => {
     console.log(`server error:\n${err.stack}`);
@@ -35,6 +53,6 @@ function broadcastData(data) {
     });
 }
 
-httpServer.listen(13000, () => {
-    console.log("HTTP server listening on port 13000");
+httpServer.listen(process.env.PORT || 13000, () => {
+    console.log(`HTTP server listening on port ${server.address().port}`);
 });
