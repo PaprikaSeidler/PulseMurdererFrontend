@@ -18,6 +18,7 @@ Vue.createApp({
                 isMurderer: false,
                 //clicked: false
             },
+            message: '',
 
             //VIGTIGT
             //Vi skal bruge en metode til at slette spillere, så listen i backend ikke bliver for lang!
@@ -100,6 +101,33 @@ Vue.createApp({
             catch (error) {
                 console.error('Error joining game:', error);
             }
-        }
+        },
+        async updatePlayerRole(player) {
+            try {
+                //Indsæt random 
+                const response = await axios.put(`${baseUrl}/${player.id}`, player)
+                this.message = response.status + '' + response.statusText
+                this.getAllPlayers()
+            }
+            catch (error) {
+                alert(error.message)
+            }
+        },
+        async chooseMurderer() {
+            try {
+                const randomIndex = Math.floor(Math.random() * this.Players.length);
+                const randomPlayer = this.Players[randomIndex];
+                console.log(randomPlayer)
+                randomPlayer.isMurderer = true
+                await this.updatePlayerRole(randomPlayer)
+                if (randomPlayer.name !== "") 
+                {
+                    window.location.href = 'sharedPage.html'
+                }
+            }
+            catch (error) {
+                alert(error.message)
+            }
+        },
     }
 }).mount('#app');
