@@ -13,21 +13,21 @@ const httpServer = http.createServer((req, res) => {
             <!DOCTYPE html>
             <html>
             <head>
-                <title>Player pulse</title>
+            <title>Player pulse</title>
             </head>
             <body>
-                <h1 class="container" align:"center">Puls:</h1>
-                <div id="data" class="container"></div>
-                <script>
-                    const ws = new WebSocket("ws://localhost:8080");
-                    ws.onmessage = function(event) {
-                        document.getElementById("data").innerText = event.data;
-                    };
-                </script>
+            <h1 class="container" align:"center">Puls:</h1>
+            <div id="data" class="container"></div>
+            <script>
+            const ws = new WebSocket("ws://localhost:8080");
+            ws.onmessage = function(event) {
+            document.getElementById("data").innerText = event.data;
+            };
+            </script>
             </body>
             </html>
-        `);
-    } else {
+`);}
+    else {
         res.writeHead(404, { "Content-Type": "text/plain" });
         res.end("Not Found");
     }
@@ -67,4 +67,3 @@ const PORT = process.env.PORT || 8080;
 httpServer.listen(PORT, () => {
     console.log(`HTTP server listening on port ${PORT}`);
 });
-

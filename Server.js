@@ -10,34 +10,33 @@ const wss = new WebSocket.Server({ server: httpServer });
 let udpData = "";
 
 server.on("error", (err) => {
-  console.log(`server error:\n${err.stack}`);
-  server.close();
+    console.log(`server error:\n${err.stack}`);
+    server.close();
 });
 
 server.on("message", (msg, rinfo) => {
-  console.log(`server got: ${msg} from ${rinfo.address}:${rinfo.port}`);
-  udpData = msg.toString();
-  broadcastData(udpData);
+    console.log(`server got: ${msg} from ${rinfo.address}:${rinfo.port}`);
+    udpData = msg.toString();
+    broadcastData(udpData);
 });
 
 server.on("listening", () => {
-  const address = server.address();
-  console.log(`server listening ${address.address}:${address.port}`);
+    const address = server.address();
+    console.log(`server listening ${address.address}:${address.port}`);
 });
 
 server.bind(13000);
 
 function broadcastData(data) {
-  wss.clients.forEach((client) => {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(data);
-    }
-  });
+    wss.clients.forEach((client) => {
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(data);
+        }
+    });
 }
 
 httpServer.on("request", (req, res) => {
   const pathname = url.parse(req.url).pathname;
-
   if (pathname === "/") {
     res.writeHead(200, { "Content-Type": "text/html" });
     res.end(`
@@ -62,6 +61,6 @@ httpServer.on("request", (req, res) => {
 });
 
 httpServer.listen(13000, () => {
-  console.log("HTTP server listening on port 8080");
+    console.log("HTTP server listening on port 8080");
 });
 
