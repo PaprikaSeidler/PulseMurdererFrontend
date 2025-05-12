@@ -41,16 +41,16 @@ Vue.createApp({
     },
 
     methods: {
-        determineWinner() {
+        async determineWinner() {
             const player1 = this.Players.find(player => player.id === Number(this.player1Id));
             const player2 = this.Players.find(player => player.id === Number(this.player2Id));
 
-            if (!player1 || !player2) {
+            if (player1 === player2) {
                 this.result = 'Invalid player IDs. Please try again.';
                 return;
             }
 
-            if (player1.role === 'Murderer' || player2.role === 'Murderer') {
+            if (player1.isMurderer === true || player2.isMurderer === true) {
                 this.result = 'The Murderer wins!';
             } else {
                 this.result = 'The two players win!';
@@ -117,13 +117,24 @@ Vue.createApp({
             try {
                 const randomIndex = Math.floor(Math.random() * this.Players.length);
                 const randomPlayer = this.Players[randomIndex];
+
                 console.log(randomPlayer)
-                randomPlayer.isMurderer = true
+                randomPlayer.IsMurderer = true
                 await this.updatePlayerRole(randomPlayer)
-                if (randomPlayer.name !== "") 
-            {
-                    //window.location.href = 'sharedPage.html'
+                this.Players = this.getPlayers()
+
+                if(this.player.id === 0){
+                    window.location.href = 'sharedPage.html'
                 }
+                else{
+                    if(this.player.isMurderer === true){
+                        window.location.href ='murderPage.html'
+                    }
+                    else{
+                        window.location.href = 'playerPage.html'
+                    }
+                }
+                
             }
             catch (error) {
                 alert(error.message)
