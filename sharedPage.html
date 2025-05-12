@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
+            </svg>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script> 
+        <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+        <link href="style.css" rel="stylesheet">
     <title>UDP Data Display</title>
 </head>
 <body>
@@ -27,6 +33,29 @@
             document.getElementById("data").innerText = "Disconnected";
         };
     </script>
+    <div id="app">
+        
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>IsAlive</th>
+                
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="player in Players" :key="player.id">
+                
+                    
+                <td>{{ player.name }}</td>
+                
+                <td>{{ player.isAlive }}</td>
+            </tr>
+        </tbody>
+    </table>
+    </div>
+    <script src="index.js"></script>
+
 </body>
 </html>
 

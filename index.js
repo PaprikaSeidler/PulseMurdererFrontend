@@ -5,6 +5,7 @@ Vue.createApp({
         return {
             id : 0,
             name: "",
+            isAlive: true,
             Muderer: true,
             Winner: false,
             player1Id: null,
@@ -15,7 +16,8 @@ Vue.createApp({
                 id: 0,
                 name: "New Player",
                 avatar: "",
-                isMurderer: false,
+                isMurderer: true,
+                isAlive: false,
                 //clicked: false
             },
             message: '',
