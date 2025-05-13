@@ -3,7 +3,7 @@ const baseUrl = 'https://pulsemurdererrest20250508143404-fgb6aucvcwhgbtb6.canada
 Vue.createApp({
     data() {
         return {
-            id : 0,
+            id: 0,
             name: "",
             isAlive: true,
             Muderer: true,
@@ -28,11 +28,11 @@ Vue.createApp({
             //eller en knap til gamemaster 'end game' som sletter spillerne fra listen
             player: null,
             Players: [
-               /* { id: 1, name: "Peter", role: 'Murderer',clicked: false },
-                { id: 2, name: "John", role: 'name',clicked:false },
-                { id: 3, name: "Mary", role: 'name',clicked:false },
-                { id: 4, name: "Sophie", role: 'name',clicked:false },
-                { id: 5, name: "Tom", role: 'name',clicked:false }, */
+                /* { id: 1, name: "Peter", role: 'Murderer',clicked: false },
+                 { id: 2, name: "John", role: 'name',clicked:false },
+                 { id: 3, name: "Mary", role: 'name',clicked:false },
+                 { id: 4, name: "Sophie", role: 'name',clicked:false }
+                 { id: 5, name: "Tom", role: 'name',clicked:false }, */
             ],
             result: ''
         };
@@ -59,11 +59,11 @@ Vue.createApp({
             }
         },
         async vote(id) {
-            this.Players.forEach( player => {
+            this.Players.forEach(player => {
                 player.clicked = false
             })
 
-            const player = this.Players.find( p => p.id === id)
+            const player = this.Players.find(p => p.id === id)
             player.clicked = !player.clicked
         },
 
@@ -75,7 +75,7 @@ Vue.createApp({
             }
             catch {
                 alert(error.message)
-            } 
+            }
         },
 
         async getAllPlayers() {
@@ -95,8 +95,7 @@ Vue.createApp({
         async joinGame() {
             try {
                 await this.addPlayer()
-                if (this.newPlayer.name !== "") 
-                {
+                if (this.newPlayer.name !== "") {
                     window.location.href = 'lobby.html'
                 }
             }
@@ -122,8 +121,7 @@ Vue.createApp({
                 console.log(randomPlayer)
                 randomPlayer.isMurderer = true
                 await this.updatePlayerRole(randomPlayer)
-                if (randomPlayer.name !== "") 
-            {
+                if (randomPlayer.name !== "") {
                     //window.location.href = 'sharedPage.html'
                 }
             }
@@ -131,8 +129,8 @@ Vue.createApp({
                 alert(error.message)
             }
         },
-        async resetMurder(){
-            for(let i = 0; i < this.Players.length; i++){
+        async resetMurder() {
+            for (let i = 0; i < this.Players.length; i++) {
                 this.Players[i].isMurderer = false
             }
         },
