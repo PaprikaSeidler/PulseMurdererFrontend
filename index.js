@@ -31,7 +31,7 @@ Vue.createApp({
                 /* { id: 1, name: "Peter", role: 'Murderer',clicked: false },
                  { id: 2, name: "John", role: 'name',clicked:false },
                  { id: 3, name: "Mary", role: 'name',clicked:false },
-                 { id: 4, name: "Sophie", role: 'name',clicked:false }
+                 { id: 4, name: "Sophie", role: 'name',clicked:false },
                  { id: 5, name: "Tom", role: 'name',clicked:false }, */
             ],
             result: ''
