@@ -12,6 +12,9 @@ Vue.createApp({
             player2Id: null,
             voteCount: 0,
             voterButtonClicked: false,
+            Players: [],
+            selectedTarget: null,
+            message: '',
             newPlayer: {
                 id: 0,
                 name: "New Player",
@@ -115,26 +118,46 @@ Vue.createApp({
                 alert(error.message)
             }
         },
-        async chooseMurderer() {
+        selectedTarget(player) {
+            this.selectedTarget = player;
+        console.log(`Player ${player.name} (ID: ${player.id}) selected as target.`);      
+        }, 
+        async killPlayer() {
+            if (!this.selectedTarget) {
+                alert('No target selected. Please select a player to kill.');
+                return;
+            }
             try {
-                const randomIndex = Math.floor(Math.random() * this.Players.length);
-                const randomPlayer = this.Players[randomIndex];
-                console.log(randomPlayer)
-                randomPlayer.isMurderer = true
-                await this.updatePlayerRole(randomPlayer)
-                if (randomPlayer.name !== "") 
-            {
-                    //window.location.href = 'sharedPage.html'
-                }
-            }
-            catch (error) {
-                alert(error.message)
-            }
-        },
-        async resetMurder(){
-            for(let i = 0; i < this.Players.length; i++){
-                this.Players[i].isMurderer = false
+                // Sæt spillerens isAlive-status til false
+                this.selectedTarget.isAlive = false;
+
+                // Send den opdaterede spiller til serveren
+                const response = await axios.put(`${baseUrl}/${this.selectedTarget.id}`, this.selectedTarget);
+                this.message = response.status + ' ' + response.statusText;
+
+                // Opdater listen over spillere
+                await this.getAllPlayers();
+
+                console.log(`Player ${this.selectedTarget.name} (ID: ${this.selectedTarget.id}) has been killed.`);
+                this.selectedTarget = null; // Nulstil den valgte spiller
+            } catch (error) {
+                console.error('Error killing player:', error);
+                alert(error.message);
             }
         },
+        async getAllPlayers() {
+            // Hent listen over spillere fra serveren
+            try {
+                const response = await axios.get(`${baseUrl}`);
+                this.Players = response.data;
+            } catch (error) {
+                console.error('Error fetching players:', error);
+            }
+        }
+    },
+    mounted() {
+        // Hent spillerne, når komponenten indlæses
+        this.getAllPlayers();
+    
     }
 }).mount('#app');
