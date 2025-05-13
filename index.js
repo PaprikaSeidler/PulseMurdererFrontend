@@ -116,34 +116,34 @@ Vue.createApp({
             }
         },
         vote(playerId) {
-                this.Players.forEach(player => {
-                    player.clicked = player.id === playerId;
-                });
-                this.selectedPlayerId = playerId;
-            },
-            async nextRound() {
-                if (!this.selectedPlayerId) {
-                    alert("Please select a player before proceeding to the next round.");
-                    return;
+            this.Players.forEach(player => {
+                player.clicked = player.id === playerId;
+            });
+            this.selectedPlayerId = playerId;
+        },
+        async nextRound() {
+            if (!this.selectedPlayerId) {
+                alert("Please select a player before proceeding to the next round.");
+                return;
+            }
+
+            try {
+                const response = await axios.put(
+                    `${baseUrl}/${this.selectedPlayerId}`,
+                    { "id": 0, "name": "aaaa", "avatar": null, "isAlive": false, "isMurdere": false }
+                );
+
+                const player = this.Players.find(p => p.id === this.selectedPlayerId);
+                if (player) {
+                    player.isAlive = false;
                 }
 
-                try {
-                    const response = await axios.put(
-                        `${baseUrl}/${this.selectedPlayerId}`,
-                        {"id": 0, "name": "aaaa", "avatar": null, "isAlive": false, "isMurdere":false}
-                    );
-
-                    const player = this.Players.find(p => p.id === this.selectedPlayerId);
-                    if (player) {
-                        player.isAlive = false;
-                    }
-
-                    alert("Player has been marked as dead. Proceeding to the next round.");
-                } catch (error) {
-                    console.error("Error updating player:", error);
-                    alert("Failed to update the player. Please try again.");
-                }
-            },
+                alert("Player has been marked as dead. Proceeding to the next round.");
+            } catch (error) {
+                console.error("Error updating player:", error);
+                alert("Failed to update the player. Please try again.");
+            }
+        },
         async chooseMurderer() {
             try {
                 const randomIndex = Math.floor(Math.random() * this.Players.length);
