@@ -3,7 +3,7 @@ const baseUrl = 'https://pulsemurdererrest20250508143404-fgb6aucvcwhgbtb6.canada
 Vue.createApp({
     data() {
         return {
-            id : 0,
+            id: 0,
             name: "",
             isAlive: true,
             Muderer: true,
@@ -12,9 +12,6 @@ Vue.createApp({
             player2Id: null,
             voteCount: 0,
             voterButtonClicked: false,
-            Players: [],
-            selectedTarget: null,
-            message: '',
             newPlayer: {
                 id: 0,
                 name: "New Player",
@@ -31,11 +28,11 @@ Vue.createApp({
             //eller en knap til gamemaster 'end game' som sletter spillerne fra listen
             player: null,
             Players: [
-               /* { id: 1, name: "Peter", role: 'Murderer',clicked: false },
-                { id: 2, name: "John", role: 'name',clicked:false },
-                { id: 3, name: "Mary", role: 'name',clicked:false },
-                { id: 4, name: "Sophie", role: 'name',clicked:false },
-                { id: 5, name: "Tom", role: 'name',clicked:false }, */
+                /* { id: 1, name: "Peter", role: 'Murderer',clicked: false },
+                 { id: 2, name: "John", role: 'name',clicked:false },
+                 { id: 3, name: "Mary", role: 'name',clicked:false },
+                 { id: 4, name: "Sophie", role: 'name',clicked:false }
+                 { id: 5, name: "Tom", role: 'name',clicked:false }, */
             ],
             result: ''
         };
@@ -62,11 +59,11 @@ Vue.createApp({
             }
         },
         async vote(id) {
-            this.Players.forEach( player => {
+            this.Players.forEach(player => {
                 player.clicked = false
             })
 
-            const player = this.Players.find( p => p.id === id)
+            const player = this.Players.find(p => p.id === id)
             player.clicked = !player.clicked
         },
 
@@ -78,7 +75,7 @@ Vue.createApp({
             }
             catch {
                 alert(error.message)
-            } 
+            }
         },
 
         async getAllPlayers() {
@@ -98,8 +95,7 @@ Vue.createApp({
         async joinGame() {
             try {
                 await this.addPlayer()
-                if (this.newPlayer.name !== "") 
-                {
+                if (this.newPlayer.name !== "") {
                     window.location.href = 'lobby.html'
                 }
             }
@@ -118,46 +114,25 @@ Vue.createApp({
                 alert(error.message)
             }
         },
-        selectedTarget(player) {
-            this.selectedTarget = player;
-        console.log(`Player ${player.name} (ID: ${player.id}) selected as target.`);      
-        }, 
-        async killPlayer() {
-            if (!this.selectedTarget) {
-                alert('No target selected. Please select a player to kill.');
-                return;
-            }
+        async chooseMurderer() {
             try {
-                // Sæt spillerens isAlive-status til false
-                this.selectedTarget.isAlive = false;
-
-                // Send den opdaterede spiller til serveren
-                const response = await axios.put(`${baseUrl}/${this.selectedTarget.id}`, this.selectedTarget);
-                this.message = response.status + ' ' + response.statusText;
-
-                // Opdater listen over spillere
-                await this.getAllPlayers();
-
-                console.log(`Player ${this.selectedTarget.name} (ID: ${this.selectedTarget.id}) has been killed.`);
-                this.selectedTarget = null; // Nulstil den valgte spiller
-            } catch (error) {
-                console.error('Error killing player:', error);
-                alert(error.message);
+                const randomIndex = Math.floor(Math.random() * this.Players.length);
+                const randomPlayer = this.Players[randomIndex];
+                console.log(randomPlayer)
+                randomPlayer.isMurderer = true
+                await this.updatePlayerRole(randomPlayer)
+                if (randomPlayer.name !== "") {
+                    //window.location.href = 'sharedPage.html'
+                }
+            }
+            catch (error) {
+                alert(error.message)
             }
         },
-        async getAllPlayers() {
-            // Hent listen over spillere fra serveren
-            try {
-                const response = await axios.get(`${baseUrl}`);
-                this.Players = response.data;
-            } catch (error) {
-                console.error('Error fetching players:', error);
+        async resetMurder() {
+            for (let i = 0; i < this.Players.length; i++) {
+                this.Players[i].isMurderer = false
             }
-        }
-    },
-    mounted() {
-        // Hent spillerne, når komponenten indlæses
-        this.getAllPlayers();
-    
+        },
     }
 }).mount('#app');
