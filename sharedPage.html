@@ -8,7 +8,7 @@
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <link href="style.css" rel="stylesheet">
-    <title>UDP Data Display</title>
+    <title>Pulse Murderer</title>
 </head>
 
 <body style="background-color: rgb(223, 220, 219); color: black;">
@@ -19,13 +19,13 @@
         <img src="/img/bloodBR.png" class="splatter bottom-right" />
     </div>
     <div class="content container mt-4">
-        <h1>Pulse Murderer - Game Page</h1></br>       
         <div id="app">
-            <div id="countdown-timer" class="text-center mt-4">
-                <h3>Who's the murderer?</h3>
-                <h5>Voting starts in:</h5>
-                <span id="minutes">00</span>:<span id="seconds">00</span>
-            </div></br></br> 
+            <h1>Pulse Murderer - Game Page</h1></br>
+            <h3>Who's the Murderer?</h3>
+            <h5>Voting starts in:</h5>
+            <div id="countdown" class="text-center mt-4" style="font-size: 24px; font-weight: bold;">
+                05:00
+            </div></br>
             <table class="table table-striped">
                 <thead>
                     <tr>
@@ -64,7 +64,7 @@
                         </td>
                     </tr>
                 </tbody>
-            </table>            
+            </table>
         </div>
     </div>
     <script src="index.js"></script>

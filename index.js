@@ -43,6 +43,12 @@ Vue.createApp({
         this.getAllPlayers()
     },
 
+    mounted() {
+        if (window.location.pathname.includes('sharedPage.html')) {
+            this.startCountdown(); // Start the countdown if on the shared page
+        }
+    },
+
     methods: {
         determineWinner() {
             const player1 = this.Players.find(player => player.id === Number(this.player1Id));
@@ -163,6 +169,26 @@ Vue.createApp({
             for (let i = 0; i < this.Players.length; i++) {
                 this.Players[i].isMurderer = false
             }
+        },
+        async startCountdown() {
+            const countdownDuration = 300;
+            let remainingTime = countdownDuration;
+
+            const countdownElement = document.getElementById('countdown');
+
+            const timer = setInterval(() => {
+                if (remainingTime <= 0) {
+                    clearInterval(timer);
+                    countdownElement.textContent = "Time's up!";
+                    return;
+                }
+
+                const minutes = Math.floor(remainingTime / 60);
+                const seconds = remainingTime % 60;
+
+                countdownElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                remainingTime--;
+            }, 1000);
         },
     }
 }).mount('#app');
