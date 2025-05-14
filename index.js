@@ -41,10 +41,16 @@ Vue.createApp({
 
     created() {
         this.getAllPlayers()
+        
+        // Retrieve the result from localStorage
+        this.result = localStorage.getItem('gameResult') || 'No result available';
+        console.log('Game result:', this.result)
     },
 
     methods: {
-        determineWinner() {
+        async determineWinner() {
+            this.getAllPlayers(baseUrl)
+            
             const player1 = this.Players.find(player => player.id === Number(this.player1Id));
             const player2 = this.Players.find(player => player.id === Number(this.player2Id));
 
@@ -53,11 +59,16 @@ Vue.createApp({
                 return;
             }
 
-            if (player1.role === 'Murderer' || player2.role === 'Murderer') {
+            if (player1.isMurderer|| player2.isMurderer) {
                 this.result = 'The Murderer wins!';
             } else {
-                this.result = 'The two players win!';
+                this.result = 'Civilians win!';
+                
             }
+            //resultat gemmes lokalt - skal nok laves om ift sessions?
+            localStorage.setItem('gameResult', this.result)
+            //naviger til rasultat-side
+            window.location.href = 'gameResult.html'
         },
         async vote(id) {
             this.Players.forEach(player => {
