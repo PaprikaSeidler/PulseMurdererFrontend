@@ -19,8 +19,13 @@
         <img src="/img/bloodBR.png" class="splatter bottom-right" />
     </div>
     <div class="content container mt-4">
-        <h1>Pulse Murderer - Game Page</h1></br></br>
+        <h1>Pulse Murderer - Game Page</h1></br>       
         <div id="app">
+            <div id="countdown-timer" class="text-center mt-4">
+                <h3>Who's the murderer?</h3>
+                <h5>Voting starts in:</h5>
+                <span id="minutes">00</span>:<span id="seconds">00</span>
+            </div></br></br> 
             <table class="table table-striped">
                 <thead>
                     <tr>
@@ -59,12 +64,7 @@
                         </td>
                     </tr>
                 </tbody>
-            </table>
-            <div id="countdown-timer" class="text-center mt-4">
-                <h3>Who's the murderer?</h3>
-                <h5>Voting starts in:</h5>
-                <span id="minutes">00</span>:<span id="seconds">00</span>
-            </div>
+            </table>            
         </div>
     </div>
     <script src="index.js"></script>
