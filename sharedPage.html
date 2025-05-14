@@ -19,49 +19,52 @@
         <img src="/img/bloodBR.png" class="splatter bottom-right" />
     </div>
     <div class="content container mt-4">
-        <h1>UDP Data Display</h1>
-        <div id="data">Connecting...</div>
-        <script>
-            // Replace with your server's WebSocket URL
-            const ws = new WebSocket("ws://localhost:8080");
-
-            ws.onopen = function () {
-                document.getElementById("data").innerText = "Connected";
-            };
-
-            ws.onmessage = function (event) {
-                document.getElementById("data").innerText = event.data.replace(/\.\d+/g, '');
-            };
-
-            ws.onerror = function (error) {
-                console.log("WebSocket Error: " + error);
-                document.getElementById("data").innerText = "Error";
-            };
-
-            ws.onclose = function () {
-                document.getElementById("data").innerText = "Disconnected";
-            };
-        </script>
+        <h1>Pulse Murderer - Game Page</h1></br></br>
         <div id="app">
-
-            <table class="table table-bordered">
+            <table class="table table-striped">
                 <thead>
                     <tr>
                         <th>Name</th>
                         <th>IsAlive</th>
-
+                        <th>Pulse</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="player in Players" :key="player.id">
-
-
                         <td>{{ player.name }}</td>
-
                         <td>{{ player.isAlive }}</td>
+                        <td>
+                            <div id="data">Connecting...</div>
+                            <script>
+                                // Replace with your server's WebSocket URL
+                                const ws = new WebSocket("ws://localhost:8080");
+
+                                ws.onopen = function () {
+                                    document.getElementById("data").innerText = "Connected";
+                                };
+
+                                ws.onmessage = function (event) {
+                                    document.getElementById("data").innerText = event.data.replace(/\.\d+/g, '');
+                                };
+
+                                ws.onerror = function (error) {
+                                    console.log("WebSocket Error: " + error);
+                                    document.getElementById("data").innerText = "Error";
+                                };
+
+                                ws.onclose = function () {
+                                    document.getElementById("data").innerText = "Disconnected";
+                                };
+                            </script>
+                        </td>
                     </tr>
                 </tbody>
             </table>
+            <div id="countdown-timer" class="text-center mt-4">
+                <h3>Who's the murderer?</h3>
+                <h5>Voting starts in:</h5>
+                <span id="minutes">00</span>:<span id="seconds">00</span>
+            </div>
         </div>
     </div>
     <script src="index.js"></script>
