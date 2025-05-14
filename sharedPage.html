@@ -20,7 +20,10 @@
     </div>
     <div class="content container mt-4">
         <h1>UDP Data Display</h1>
-        <div id="data">Connecting...</div>
+        <div id="data">Connecting...
+                <ul id="playerList">
+                </ul>
+            </div>
         <script>
             // Replace with your server's WebSocket URL
             const ws = new WebSocket("ws://localhost:8080");
