@@ -19,7 +19,34 @@
         <img src="/img/bloodBR.png" class="splatter bottom-right" />
     </div>
     <div class="content container mt-4">
-        <h1>Pulse Murderer - Game Page</h1></br></br>
+
+        <h1>UDP Data Display</h1>
+        <div id="data">Connecting...
+                <ul id="playerList">
+                </ul>
+            </div>
+        <script>
+            // Replace with your server's WebSocket URL
+            const ws = new WebSocket("ws://localhost:8080");
+
+            ws.onopen = function () {
+                document.getElementById("data").innerText = "Connected";
+            };
+
+            ws.onmessage = function (event) {
+                document.getElementById("data").innerText = event.data.replace(/\.\d+/g, '');
+            };
+
+            ws.onerror = function (error) {
+                console.log("WebSocket Error: " + error);
+                document.getElementById("data").innerText = "Error";
+            };
+
+            ws.onclose = function () {
+                document.getElementById("data").innerText = "Disconnected";
+            };
+        </script>
+
         <div id="app">
             <table class="table table-striped">
                 <thead>

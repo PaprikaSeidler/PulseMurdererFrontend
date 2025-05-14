@@ -94,27 +94,6 @@ Vue.createApp({
             this.getPlayers(baseUrl)
         },
 
-        async addPlayer() {
-            try {
-                response = await axios.post(baseUrl, this.newPlayer)
-                this.message = response.status + '' + response.statusText
-                this.getAllPlayers()
-            }
-            catch {
-                alert(error.message)
-            }
-        },
-        async joinGame() {
-            try {
-                await this.addPlayer()
-                if (this.newPlayer.name !== "") {
-                    window.location.href = 'lobby.html'
-                }
-            }
-            catch (error) {
-                console.error('Error joining game:', error);
-            }
-        },
         async updatePlayerRole(player) {
             try {
                 //Indsæt random 
@@ -159,7 +138,6 @@ Vue.createApp({
             try {
                 const randomIndex = Math.floor(Math.random() * this.Players.length);
                 const randomPlayer = this.Players[randomIndex];
-                console.log(randomPlayer)
                 randomPlayer.isMurderer = true
                 await this.updatePlayerRole(randomPlayer)
                 if (randomPlayer.name !== "") {
