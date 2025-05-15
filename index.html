@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="style.css">
     <title>Start Game</title>
 </head>
 
@@ -16,12 +17,12 @@
 
 
         <!-- <div id="app" class="d-flex flex-column justify-content-center align-items-center "> -->
-        <!--         <div>
+        <div>
             <img src="/img/bloodTL.png" class="splatter top-left" />
             <img src="/img/bloodTR.png" class="splatter top-right" />
             <img src="/img/bloodBL.png" class="splatter bottom-left" />
             <img src="/img/bloodBR.png" class="splatter bottom-right" />
-        </div> -->
+        </div>
 
         <!--QR-->
         <div v-if="!qrCodeUrl" style="align-items: center; margin-top: 25%; margin-bottom: auto;">
@@ -52,7 +53,7 @@
                 </div>
             </div>
 
-            <button class="btn btn-success mt-4" @click="chooseMurderer">Start Game</button>
+            <button class="btn btn-success mt-4" @click="startGame">Start Game</button>
             <button class="btn btn-danger mt-4 ml-2" @click="resetMurder">Reset</button>
 
         </div>

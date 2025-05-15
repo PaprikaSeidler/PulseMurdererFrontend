@@ -26,17 +26,9 @@ Vue.createApp({
             message: '',
 
             //VIGTIGT
-            //Vi skal bruge en metode til at slette spillere, så listen i backend ikke bliver for lang!
-            //Fx beforeunload event, som sletter spilleren fra listen når de lukker siden
-            //eller en knap til gamemaster 'end game' som sletter spillerne fra listen
+            //en funktion til gamemaster 'end game' som sletter spillerne fra listen når spillet er slut
             player: null,
-            Players: [
-                /* { id: 1, name: "Peter", role: 'Murderer',clicked: false },
-                 { id: 2, name: "John", role: 'name',clicked:false },
-                 { id: 3, name: "Mary", role: 'name',clicked:false },
-                 { id: 4, name: "Sophie", role: 'name',clicked:false },
-                 { id: 5, name: "Tom", role: 'name',clicked:false }, */
-            ],
+            Players: [],
             selectedPlayerId: null,
             result: ''
         };
@@ -59,7 +51,7 @@ Vue.createApp({
     methods: {
         async determineWinner() {
             this.getAllPlayers(baseUrl)
-
+            
             const player1 = this.Players.find(player => player.id === Number(this.player1Id));
             const player2 = this.Players.find(player => player.id === Number(this.player2Id));
 
@@ -68,11 +60,11 @@ Vue.createApp({
                 return;
             }
 
-            if (player1.isMurderer|| player2.isMurderer) {
+            if (player1.isMurderer || player2.isMurderer) {
                 this.result = 'The Murderer wins!';
             } else {
                 this.result = 'Civilians win!';
-
+                
             }
             //resultat gemmes lokalt - skal nok laves om ift sessions?
             localStorage.setItem('gameResult', this.result)
@@ -143,6 +135,18 @@ Vue.createApp({
                 alert("Failed to update the player. Please try again.");
             }
         },
+        async startGame() {
+            if (this.Players.length === 5) {
+                try {
+                    await this.chooseMurderer();
+                    window.location.href = 'sharedPage.html'
+                }
+                catch (error) {
+                    alert(error.message)
+                }
+            }
+            },
+
         async chooseMurderer() {
             try {
                 const randomIndex = Math.floor(Math.random() * this.Players.length);
