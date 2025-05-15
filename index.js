@@ -30,7 +30,8 @@ Vue.createApp({
             player: null,
             Players: [],
             selectedPlayerId: null,
-            result: ''
+            result: '',
+            roundCount: 1,
         };
     },
 
@@ -113,9 +114,15 @@ Vue.createApp({
             this.selectedPlayerId = playerId;
         },
         async nextRound() {
-            if (!this.selectedPlayerId) {
-                alert("Please select a player before proceeding to the next round.");
-                return;
+            const alivePlayers = this.Players.filter(player => player.isAlive);
+            const aliveCount = alivePlayers.length;
+
+            const voteCount = this.Players.filter(player => player.clicked).length;
+
+            if (aliveCount === voteCount) {
+                alert("All players have voted. Proceeding to the next round.");
+                this.roundCount++;
+                window.location.reload();
             }
 
             try {
@@ -177,7 +184,7 @@ Vue.createApp({
             }
         },
         async startCountdown() {
-            const countdownDuration = 300;
+            const countdownDuration = 30; // Countdown duration in seconds
             let remainingTime = countdownDuration;
 
             const countdownElement = document.getElementById('countdown');
@@ -186,6 +193,11 @@ Vue.createApp({
                 if (remainingTime <= 0) {
                     clearInterval(timer);
                     countdownElement.textContent = "Time's up!";
+
+                    this.nextRound();
+                    const checkInterval = setInterval(() => {
+                        this.nextRound();
+                    }, 2000);
                     return;
                 }
 
