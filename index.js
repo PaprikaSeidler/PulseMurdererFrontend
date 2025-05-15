@@ -59,7 +59,7 @@ Vue.createApp({
     methods: {
         async determineWinner() {
             this.getAllPlayers(baseUrl)
-            
+
             const player1 = this.Players.find(player => player.id === Number(this.player1Id));
             const player2 = this.Players.find(player => player.id === Number(this.player2Id));
 
@@ -72,7 +72,7 @@ Vue.createApp({
                 this.result = 'The Murderer wins!';
             } else {
                 this.result = 'Civilians win!';
-                
+
             }
             //resultat gemmes lokalt - skal nok laves om ift sessions?
             localStorage.setItem('gameResult', this.result)
