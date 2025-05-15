@@ -31,7 +31,7 @@ Vue.createApp({
                 await this.addPlayer()
                 this.getAllPlayers()
                 this.newPlayer = await axios.get(`${baseUrl}/${this.newPlayer.id}`)
-                window.location.href = `index.html?id=${this.newPlayer.id}`
+                window.location.href = `/playerPage.html?id=${this.newPlayer.id}`
                 //if (this.newPlayer.name !== "") {
                 //}
             }

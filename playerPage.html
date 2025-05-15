@@ -1,33 +1,170 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hand-thumbs-down" viewBox="0 0 16 16">
-</svg>
-<html lang="en">
-    <h1>Welcome, <span id="playerName"></span></h1>
-    <p>Role: <span id="role"></span></p>
-    <p>Status: <span id="status"></span></p>
-
-    <!-- Vote UI -->
-    <div id="voteSection">
-        <label for="voteTarget">Vote for:</label>
-        <select id="voteTarget"></select>
-        <button onclick="submitVote()">Vote</button>
-    </div>
-
-    <!-- Murderer Kill UI -->
-    <div id="killSection" style="display:none;">
-        <label for="killTarget">Kill:</label>
-        <select id="killTarget"></select>
-        <button onclick="submitKill()">Kill</button>
-    </div>
-
-    <script src="playerLogic.js"></script>
-
+<!DOCTYPE html>
+<html>
     <head>
-        </svg>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-        <script src="https://unpkg.com/axios/dist/axios.min.js"></script> 
-        <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-        <link href="style.css" rel="stylesheet">
-        <title>Player</title>
+        <meta charset="UTF-8">
+        <title>Welcome</title>
+        <style>
+        body { font-family: sans-serif; padding: 20px; }
+        .hidden { display: none; }
+        .player-card { border: 1px solid #ccc; padding: 10px; border-radius: 6px; width: 250px; margin: 0 auto; }
+        .status { margin-top: 20px; }
+        </style>
     </head>
+    <body>
+        <h2>Welcome to the Game</h2>
+        <div id="playerInfo" class="player-card hidden">
+            <p><strong>Name:</strong> <span id="playerName"></span></p>
+            <p hidden><strong>ID:</strong> <span id="playerId"></span></p>
+            <p><strong>Status:</strong> <span id="playerStatus"></span></p>
+            <h4> <p id="roleInfo"></p> <p>Status: <span id="status"></span></p></h4>
+            <div id="voteSection">
+                <label for="voteTarget">Vote for a player:</label>
+                <select id="voteTarget"></select>
+                <button id="voteButton">Vote</button>
+            </div>
+            <div id="killSection" style="display:none;">
+                <label for="killTarget">Kill a player:</label>
+                <select id="killTarget"></select>
+                <button id="killButton">Kill</button>
+            </div>
+
+        </div>
+
+        <script>
+        let playerId = localStorage.getItem("playerId");
+        let ws = new WebSocket("ws://localhost:8080");
+        let thisPlayer = null;
+
+        window.onload = async function() {
+            if (!playerId) {
+                alert("Missing player ID");
+                return;
+            }
+
+            await loadPlayer()
+            await loadPlayers()
+
+            document.getElementById("voteButton").onclick = vote;
+            document.getElementById("killButton").onclick = kill;
+        }
+
+        ws.onmessage = function (event) {
+            let updatedPlayers = JSON.parse(event.data);
+            thisPlayer = updatedPlayers.find(p => p.id == playerId);
+
+            document.getElementById("status").innerText = thisPlayer?.isAlive ? "Alive" : "Eliminated";
+
+            if (!thisPlayer?.isAlive || thisPlayer.hasVoted) {
+                document.getElementById("voteSection").style.display = "none";
+            }
+
+            if (thisPlayer?.isMurderer && thisPlayer?.isAlive) {
+                document.getElementById("killSection").style.display = "block";
+                loadKillTargets(updatedPlayers);
+            }
+        };
+
+        // Try to get ID from URL if not in storage
+        if (!playerId) {
+            let urlParams = new URLSearchParams(window.location.search);
+            playerId = urlParams.get("id");
+
+            if (playerId) {
+                localStorage.setItem("playerId", playerId);
+            }
+        }
+
+        if (!playerId) {
+            document.body.innerHTML = "<h3>Error: No player ID provided. Please join using a valid player link.</h3>";
+        }
+        else {
+            fetch(`https://pulsemurdererrest20250508143404-fgb6aucvcwhgbtb6.canadacentral-01.azurewebsites.net/api/players/${playerId}`)
+                .then(res => {
+                    if (!res.ok) throw new Error("Player not found");
+                    return res.json();
+                })
+                .then(player => {
+                    document.getElementById("playerName").textContent = player.name;
+                    document.getElementById("playerId").textContent = player.id;
+                    document.getElementById("playerStatus").textContent = player.isAlive ? "Alive" : "Dead";
+                    document.getElementById("playerInfo").classList.remove("hidden");
+                })
+                .catch(err => {
+                    document.body.innerHTML = `<h3>Error: ${err.message}</h3>`;
+                });
+        }
+
+        async function loadPlayer() {
+            let res = await fetch(`https://pulsemurdererrest20250508143404-fgb6aucvcwhgbtb6.canadacentral-01.azurewebsites.net/api/players/${playerId}`);
+            let player = await res.json();
+            thisPlayer = player;
+
+            document.getElementById("playerName").innerText = player.name;
+            document.getElementById("roleInfo").innerText = player.isMurderer ? "🔪 You are the Murderer" : "🧑 Civilian";
+            document.getElementById("status").innerText = player.isAlive ? "Alive" : "Eliminated";
+
+            if (!player.isAlive || player.hasVoted) {
+                document.getElementById("voteSection").style.display = "none";
+            }
+
+            if (player.isMurderer && player.isAlive) {
+                document.getElementById("killSection").style.display = "block";
+            }
+        }
+
+        async function loadPlayers() {
+            let res = await fetch(`https://pulsemurdererrest20250508143404-fgb6aucvcwhgbtb6.canadacentral-01.azurewebsites.net/api/players/`);
+            let players = await res.json();
+
+            const voteSelect = document.getElementById("voteTarget");
+            voteSelect.innerHTML = "";
+            players
+                .filter(p => p.id != playerId && p.isAlive)
+                .forEach(p => {
+                    let opt = document.createElement("option");
+                    opt.value = p.id;
+                    opt.textContent = p.name;
+                    voteSelect.appendChild(opt);
+                });
+
+            loadKillTargets(players);
+        }
+
+        function loadKillTargets(players) {
+            let killSelect = document.getElementById("killTarget");
+            killSelect.innerHTML = "";
+
+            players
+                .filter(p => p.id != playerId && p.isAlive)
+                .forEach(p => {
+                    let opt = document.createElement("option");
+                    opt.value = p.id;
+                    opt.textContent = p.name;
+                    killSelect.appendChild(opt);
+                });
+        }
+
+        async function vote() {
+            let target = document.getElementById("voteTarget").value;
+            await fetch(`https://pulsemurdererrest20250508143404-fgb6aucvcwhgbtb6.canadacentral-01.azurewebsites.net/api/players/${playerId}/vote`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ targetId: parseInt(target) })
+            });
+            alert("Vote submitted");
+            document.getElementById("voteSection").style.display = "none";
+        }
+
+        async function kill() {
+            let target = document.getElementById("killTarget").value;
+            await fetch(`https://pulsemurdererrest20250508143404-fgb6aucvcwhgbtb6.canadacentral-01.azurewebsites.net/api/players/${playerId}/kill`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ targetId: parseInt(target) })
+            });
+            alert("Player killed");
+            document.getElementById("killSection").style.display = "none";
+        }
+        </script>
+    </body>
 </html>

@@ -1,4 +1,7 @@
 const baseUrl = 'https://pulsemurdererrest20250508143404-fgb6aucvcwhgbtb6.canadacentral-01.azurewebsites.net/api/players'
+function Sleep(ms){
+    return new Promise(resolve => setTimeout(resolve,ms))
+}
 
 Vue.createApp({
     data() {
@@ -156,7 +159,17 @@ Vue.createApp({
         },
         async resetMurder() {
             for (let i = 0; i < this.Players.length; i++) {
-                this.Players[i].isMurderer = false
+                try{
+                    Sleep(100)
+                    const response = await axios.put(
+                        `${baseUrl}/${this.Players[i].id}`,
+                        {"id": 0, "name": "aaaa", "avatar": "","hasVoted":false,"votesRecieved":0, "isAlive": true, "isMurderer": false }
+                    );
+                    console.log(response)
+                }
+                catch(error){
+                    console.log(error.message)
+                }
             }
         },
         async startCountdown() {
