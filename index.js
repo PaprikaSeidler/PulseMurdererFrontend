@@ -117,14 +117,22 @@ Vue.createApp({
             let alivePlayers = this.Players.filter(player => player.isAlive);
             let aliveCount = alivePlayers.length;
 
+
+            this.getAllPlayers()
+            let votedPlayers = this.Players.filter(player => player.hasVoted);
+            let votedCount = votedPlayers.length
+
+            if (aliveCount === votedCount) {
+                alert("All players have voted. Proceeding to the next round.");
+
             let voteCount = this.Players.filter(player => player.hasVoted)
             let count = voteCount.length
             this.Players = this.getAllPlayers()
 
             if (aliveCount === count) {
                 // alert("All players have voted. Proceeding to the next round.");
+
                 this.roundCount++;
-                Sleep(1000)
                 window.location.reload();
 
                 this.startCountdown()
@@ -159,22 +167,22 @@ Vue.createApp({
         async resetMurder() {
             for (let i = 0; i < this.Players.length; i++) {
                 try{
-                    Sleep(10)
-                    const response = await axios.put(
-                        `${baseUrl}/${this.Players[i].id}`,
-                        {"id": 0, "name": "aaaa", "avatar": "","hasVoted":false,"votesRecieved":0, "isAlive": true, "isMurderer": false }
-                    );
-                    console.log(response)
+
+                    const response = await axios.get(baseUrl);
+                    const update = 
+                        await axios.put(`${baseUrl}/${response.data[i].id}`,{"id": 0, "name": "aaaa", "avatar": "","hasVoted":false,"votesRecieved":0, "isAlive": true, "isMurderer": false })
+
                 }
                 catch(error){
                     console.log(error.message)
                 }
             }
             Sleep(1000)
-            window.location.reload()
+            window.location.reload();
+
         },
         async startCountdown() {
-            const countdownDuration = 30; // Countdown duration in seconds
+            const countdownDuration = 5; // Countdown duration in seconds
             let remainingTime = countdownDuration;
 
             const countdownElement = document.getElementById('countdown');
