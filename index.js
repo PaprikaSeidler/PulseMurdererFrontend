@@ -21,7 +21,7 @@ Vue.createApp({
                 avatar: "",
                 isMurderer: true,
                 isAlive: false,
-                //clicked: false
+                //hasVoted: false
             },
             message: '',
 
@@ -126,6 +126,7 @@ Vue.createApp({
                 this.roundCount++;
                 Sleep(1000)
                 window.location.reload();
+
                 this.startCountdown()
             }
         },
