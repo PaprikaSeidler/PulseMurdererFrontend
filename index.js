@@ -138,14 +138,12 @@ Vue.createApp({
             let votedPlayers = this.Players.filter(player => player.hasVoted);
 
             if(alivePlayers.length === votedPlayers.length){
-                if (alivePlayers[i].hasVoted === true) {
-                    this.roundCount++;
-                    localStorage.setItem('roundCount', this.roundCount)
+                this.roundCount++;
+                localStorage.setItem('roundCount', this.roundCount)
 
-                    await Sleep(2000)
-                    window.location.reload();
-                    this.startCountdown()
-                }
+                await Sleep(2000)
+                window.location.reload();
+                this.startCountdown()
             }
         },
         async startGame() {
