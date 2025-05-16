@@ -1,6 +1,6 @@
 const baseUrl = 'https://pulsemurdererrest20250508143404-fgb6aucvcwhgbtb6.canadacentral-01.azurewebsites.net/api/players'
-function Sleep(ms){
-    return new Promise(resolve => setTimeout(resolve,ms))
+function Sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms))
 }
 
 Vue.createApp({
@@ -37,7 +37,7 @@ Vue.createApp({
 
     created() {
         this.getAllPlayers()
-        
+
         // Retrieve the result from localStorage
         this.result = localStorage.getItem('gameResult') || 'No result available';
         console.log('Game result:', this.result)
@@ -52,7 +52,7 @@ Vue.createApp({
     methods: {
         async determineWinner() {
             this.getAllPlayers(baseUrl)
-            
+
             const player1 = this.Players.find(player => player.id === Number(this.player1Id));
             const player2 = this.Players.find(player => player.id === Number(this.player2Id));
 
@@ -65,7 +65,7 @@ Vue.createApp({
                 this.result = 'The Murderer wins!';
             } else {
                 this.result = 'Civilians win!';
-                
+
             }
             //resultat gemmes lokalt - skal nok laves om ift sessions?
             localStorage.setItem('gameResult', this.result)
@@ -125,86 +125,87 @@ Vue.createApp({
             if (aliveCount === votedCount) {
                 alert("All players have voted. Proceeding to the next round.");
 
-            let voteCount = this.Players.filter(player => player.hasVoted)
-            let count = voteCount.length
-            this.Players = this.getAllPlayers()
+                let voteCount = this.Players.filter(player => player.hasVoted)
+                let count = voteCount.length
+                this.Players = this.getAllPlayers()
 
-            if (aliveCount === count) {
-                // alert("All players have voted. Proceeding to the next round.");
+                if (aliveCount === count) {
+                    // alert("All players have voted. Proceeding to the next round.");
 
-                this.roundCount++;
-                window.location.reload();
+                    this.roundCount++;
+                    window.location.reload();
 
-                this.startCountdown()
+                    this.startCountdown()
+                }
             }
         },
         async startGame() {
-            if (this.Players.length === 5) {
+                if (this.Players.length === 5) {
+                    try {
+                        await this.chooseMurderer();
+                        window.location.href = 'sharedPage.html'
+                    }
+                    catch (error) {
+                        alert(error.message)
+                    }
+                }
+            },
+
+        async chooseMurderer() {
                 try {
-                    await this.chooseMurderer();
-                    window.location.href = 'sharedPage.html'
+                    const randomIndex = Math.floor(Math.random() * this.Players.length);
+                    const randomPlayer = this.Players[randomIndex];
+                    randomPlayer.isMurderer = true
+                    await this.updatePlayerRole(randomPlayer)
+                    if (randomPlayer.name !== "") {
+                        //window.location.href = 'sharedPage.html'
+                    }
                 }
                 catch (error) {
                     alert(error.message)
                 }
-            }
             },
-
-        async chooseMurderer() {
-            try {
-                const randomIndex = Math.floor(Math.random() * this.Players.length);
-                const randomPlayer = this.Players[randomIndex];
-                randomPlayer.isMurderer = true
-                await this.updatePlayerRole(randomPlayer)
-                if (randomPlayer.name !== "") {
-                    //window.location.href = 'sharedPage.html'
-                }
-            }
-            catch (error) {
-                alert(error.message)
-            }
-        },
         async resetMurder() {
-            for (let i = 0; i < this.Players.length; i++) {
-                try{
+                for (let i = 0; i < this.Players.length; i++) {
+                    try {
 
-                    const response = await axios.get(baseUrl);
-                    const update = 
-                        await axios.put(`${baseUrl}/${response.data[i].id}`,{"id": 0, "name": "aaaa", "avatar": "","hasVoted":false,"votesRecieved":0, "isAlive": true, "isMurderer": false })
+                        const response = await axios.get(baseUrl);
+                        const update =
+                            await axios.put(`${baseUrl}/${response.data[i].id}`, { "id": 0, "name": "aaaa", "avatar": "", "hasVoted": false, "votesRecieved": 0, "isAlive": true, "isMurderer": false })
 
+                    }
+                    catch (error) {
+                        console.log(error.message)
+                    }
                 }
-                catch(error){
-                    console.log(error.message)
-                }
-            }
-            Sleep(1000)
-            window.location.reload();
+                Sleep(1000)
+                window.location.reload();
 
-        },
+            },
         async startCountdown() {
-            const countdownDuration = 5; // Countdown duration in seconds
-            let remainingTime = countdownDuration;
+                const countdownDuration = 5; // Countdown duration in seconds
+                let remainingTime = countdownDuration;
 
-            const countdownElement = document.getElementById('countdown');
+                const countdownElement = document.getElementById('countdown');
 
-            const timer = setInterval(() => {
-                if (remainingTime <= 0) {
-                    clearInterval(timer);
-                    countdownElement.textContent = "Time's up!";
+                const timer = setInterval(() => {
+                    if (remainingTime <= 0) {
+                        clearInterval(timer);
+                        countdownElement.textContent = "Time's up!";
 
-                    this.nextRound();
-                    const checkInterval = setInterval(() => {
                         this.nextRound();
-                    }, 2000);
-                    return;
-                }
+                        const checkInterval = setInterval(() => {
+                            this.nextRound();
+                        }, 2000);
+                        return;
+                    }
 
-                const minutes = Math.floor(remainingTime / 60);
-                const seconds = remainingTime % 60;
+                    const minutes = Math.floor(remainingTime / 60);
+                    const seconds = remainingTime % 60;
 
-                countdownElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-                remainingTime--;
-            }, 1000);
-        },
-    }
-}).mount('#app');
+                    countdownElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    remainingTime--;
+                }, 1000);
+            },
+        }
+    }).mount('#app');
