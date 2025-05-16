@@ -1,6 +1,22 @@
 let playerId = localStorage.getItem("playerId");
 let thisPlayer = null;
 
+// Initialize WebSocket connection in the browser
+const ws = new WebSocket('ws://localhost:8080');
+
+ws.onopen = function() {
+    console.log('WebSocket connection established');
+};
+
+ws.onerror = function(error) {
+    console.error('WebSocket error:', error);
+};
+
+ws.onmessage = function(event){
+    console.log(event)
+    // window.location.reload()
+}
+
 Vue.createApp({
     data() {
         return {

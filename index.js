@@ -4,6 +4,26 @@ function Sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms))
 }
 
+const ws = new WebSocket("ws://127.0.0.1:8080")
+
+ws.onopen = function(){
+    console.log("Websocket open")
+}
+
+ws.onerror = function(error){
+    console.log(error)
+}
+
+function broadcastData(data){
+    console.log(data)
+    if(ws.readyState === WebSocket.OPEN){
+        ws.send(JSON.stringify(data))
+    }
+    else{
+        console.error("Websocket error!",ws.readyState)
+    }
+}
+
 Vue.createApp({
     data() {
         return {
@@ -121,7 +141,6 @@ Vue.createApp({
         async getAllPlayers() {
             this.getPlayers(baseUrl)
         },
-
         async updatePlayerRole(player) {
             try {
                 //Indsæt random 
@@ -143,7 +162,8 @@ Vue.createApp({
             this.determineWinner()
             this.getAllPlayers()
             let alivePlayers = this.Players.filter(player => player.isAlive);
-            broadcastData(alivePlayers)
+
+            
             let votedPlayers = this.Players.filter(player => player.hasVoted);
 
             if(alivePlayers.length === votedPlayers.length){
@@ -153,6 +173,7 @@ Vue.createApp({
                 await Sleep(2000)
                 window.location.reload();
                 this.startCountdown()
+                broadcastData(1)
             }
         },
         async startGame() {
@@ -166,7 +187,6 @@ Vue.createApp({
                 }
             }
         },
-
         async chooseMurderer() {
             try {
                 const randomIndex = Math.floor(Math.random() * this.Players.length);
