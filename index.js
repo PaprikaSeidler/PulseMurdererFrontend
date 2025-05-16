@@ -171,17 +171,17 @@ Vue.createApp({
         async resetMurder() {
             for (let i = 0; i < this.Players.length; i++) {
                 try{
-                    Sleep(100)
-                    const response = await axios.put(
-                        `${baseUrl}/${this.Players[i].id}`,
-                        {"id": 0, "name": "aaaa", "avatar": "","hasVoted":false,"votesRecieved":0, "isAlive": true, "isMurderer": false }
-                    );
-                    console.log(response)
+                    const response = await axios.get(baseUrl)
+                        // `${baseUrl}/${this.Players[i].id}`,
+                        // {"id": 0, "name": "aaaa", "avatar": "","hasVoted":false,"votesRecieved":0, "isAlive": true, "isMurderer": false }
+                    const update = await axios.put(`${baseUrl}/${response.data[i].id}`,{"id": 0, "name": "aaaa", "avatar": "","hasVoted":false,"votesRecieved":0, "isAlive": true, "isMurderer": false })
                 }
                 catch(error){
                     console.log(error.message)
                 }
             }
+            Sleep(1000)
+            window.location.reload()
         },
         async startCountdown() {
             const countdownDuration = 30; // Countdown duration in seconds
