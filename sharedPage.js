@@ -1,7 +1,8 @@
 // sharedPage.js
-const socket = new WebSocket("ws://localhost:13000");
+const socket = new WebSocket("ws://localhost:8080");
 
 socket.onmessage = function (event) {
+    console.log(event)
     const players = JSON.parse(event.data);
     const list = document.getElementById("playerList");
     list.innerHTML = "";

@@ -1,4 +1,5 @@
 const baseUrl = 'https://pulsemurdererrest20250508143404-fgb6aucvcwhgbtb6.canadacentral-01.azurewebsites.net/api/players'
+
 function Sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms))
 }
@@ -142,6 +143,7 @@ Vue.createApp({
             this.determineWinner()
             this.getAllPlayers()
             let alivePlayers = this.Players.filter(player => player.isAlive);
+            broadcastData(alivePlayers)
             let votedPlayers = this.Players.filter(player => player.hasVoted);
 
             if(alivePlayers.length === votedPlayers.length){

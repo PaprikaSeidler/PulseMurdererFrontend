@@ -1,6 +1,6 @@
 let playerId = localStorage.getItem("playerId");
-let ws = new WebSocket("ws://localhost:8080");
 let thisPlayer = null;
+
 Vue.createApp({
     data() {
         return {
@@ -23,23 +23,6 @@ window.onload = async function () {
     document.getElementById("killButton").onclick = kill;
 }
 
-ws.onmessage = function (event) {
-    let updatedPlayers = JSON.parse(event.data);
-    thisPlayer = updatedPlayers.find(p => p.id == playerId);
-
-    document.getElementById("status").innerText = thisPlayer?.isAlive ? "Alive" : "Eliminated";
-
-    if (!thisPlayer?.isAlive || thisPlayer.hasVoted) {
-        document.getElementById("voteSection").style.display = "none";
-    }
-
-    if (thisPlayer?.isMurderer && thisPlayer?.isAlive) {
-        document.getElementById("killSection").style.display = "block";
-        loadKillTargets(updatedPlayers);
-    }
-    loadPlayers();
-
-};
 
 // Try to get ID from URL if not in storage
 if (!playerId) {
