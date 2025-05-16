@@ -123,7 +123,7 @@ Vue.createApp({
             let votedCount = votedPlayers.length
 
             if (aliveCount === votedCount) {
-                alert("All players have voted. Proceeding to the next round.");
+                // alert("All players have voted. Proceeding to the next round.");
 
                 let voteCount = this.Players.filter(player => player.hasVoted)
                 let count = voteCount.length
