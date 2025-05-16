@@ -41,6 +41,11 @@ Vue.createApp({
         // Retrieve the result from localStorage
         this.result = localStorage.getItem('gameResult') || 'No result available';
         console.log('Game result:', this.result)
+
+        const savedRoundCount = localStorage.getItem('roundCount')
+        if(savedRoundCount){
+            this.roundCount = parseInt(savedRoundCount, 10)
+        }
     },
 
     mounted() {
@@ -128,25 +133,19 @@ Vue.createApp({
             this.selectedPlayerId = playerId;
         },
         async nextRound() {
-            let alivePlayers = this.Players.filter(player => player.isAlive);
-            let aliveCount = alivePlayers.length;
-
-
             this.getAllPlayers()
+            let alivePlayers = this.Players.filter(player => player.isAlive);
             let votedPlayers = this.Players.filter(player => player.hasVoted);
-            let votedCount = votedPlayers.length
 
-            if (aliveCount === votedCount) {
-                // alert("All players have voted. Proceeding to the next round.");
+            if(alivePlayers.length === votedPlayers.length){
+                if (alivePlayers[i].hasVoted === true) {
+                    this.roundCount++;
+                    localStorage.setItem('roundCount', this.roundCount)
 
-                let voteCount = this.Players.filter(player => player.hasVoted)
-                let count = voteCount.length                
-                this.Players = this.getAllPlayers()
-                
-                this.roundCount++;
-                window.location.reload();
-
-                this.startCountdown()
+                    await Sleep(2000)
+                    window.location.reload();
+                    this.startCountdown()
+                }
             }
         },
         async startGame() {
@@ -187,6 +186,8 @@ Vue.createApp({
                     console.log(error.message)
                 }
             }
+            this.roundCount = 1
+            localStorage.setItem('roundCount', this.roundCount)
             Sleep(1000)
             window.location.reload()
         },
