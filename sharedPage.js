@@ -14,4 +14,3 @@ socket.onmessage = function (event) {
         list.appendChild(item);
     });
 };
-

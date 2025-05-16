@@ -13,7 +13,7 @@ Vue.createApp({
             Winner: false,
             player1Id: null,
             player2Id: null,
-            voteCount: 0,
+            // voteCount: 0,
             voterButtonClicked: false,
             newPlayer: {
                 id: 0,
@@ -117,13 +117,17 @@ Vue.createApp({
             let alivePlayers = this.Players.filter(player => player.isAlive);
             let aliveCount = alivePlayers.length;
 
-            let voteCount = this.Players.filter(player => player.hasVoted);
+            let voteCount = this.Players.filter(player => player.hasVoted)
+            let count = voteCount.length
+            this.Players = this.getAllPlayers()
 
-            if (aliveCount === voteCount) {
-                alert("All players have voted. Proceeding to the next round.");
+            if (aliveCount === count) {
+                // alert("All players have voted. Proceeding to the next round.");
                 this.roundCount++;
                 Sleep(1000)
                 window.location.reload();
+
+                this.startCountdown()
             }
         },
         async startGame() {
@@ -155,7 +159,7 @@ Vue.createApp({
         async resetMurder() {
             for (let i = 0; i < this.Players.length; i++) {
                 try{
-                    Sleep(100)
+                    Sleep(10)
                     const response = await axios.put(
                         `${baseUrl}/${this.Players[i].id}`,
                         {"id": 0, "name": "aaaa", "avatar": "","hasVoted":false,"votesRecieved":0, "isAlive": true, "isMurderer": false }
@@ -166,6 +170,8 @@ Vue.createApp({
                     console.log(error.message)
                 }
             }
+            Sleep(1000)
+            window.location.reload()
         },
         async startCountdown() {
             const countdownDuration = 30; // Countdown duration in seconds
