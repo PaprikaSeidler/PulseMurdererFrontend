@@ -56,22 +56,28 @@ Vue.createApp({
 
     methods: {
         async determineWinner() {
-            this.getAllPlayers(baseUrl)
-            playersAlive = this.Players.filter(player => player.isAlive);
+            this.result = null
+            localStorage.setItem('gameResult', this.result)
+
+            let playersAlive = this.Players.filter(player => player.isAlive);
+
+            let murderer = null
+            for(let i = 0;i < playersAlive.length; i++){
+                murderer = playersAlive.filter(player => player.isMurderer)
+            }
+
+            if(murderer.length === 0){
+                this.result = 'Civilians win!';
+                localStorage.setItem('gameResult', this.result)
+                //naviger til rasultat-side
+                window.location.href = 'gameResult.html'
+            }
+
             if (playersAlive.length === 2) {
-
-
-                const player1 = playersAlive.find(player => player.id === Number(this.player1Id));
-                const player2 = playersAlive.find(player => player.id === Number(this.player2Id));
-
-                if (!player1 || !player2) {
-                    this.result = 'Invalid player IDs. Please try again.';
-                    return;
-                }
-
-                if (player1.isMurderer || player2.isMurderer) {
+                if (playersAlive[0].isMurderer || playersAlive[1].isMurderer) {
                     this.result = 'The Murderer wins!';
-                } else {
+                } 
+                else {
                     this.result = 'Civilians win!';
                 }
                 //resultat gemmes lokalt - skal nok laves om ift sessions?
@@ -80,7 +86,7 @@ Vue.createApp({
                 window.location.href = 'gameResult.html'
             }
             else if (playersAlive.length === 1) {
-                const player1 = playersAlive.find(player => player.id === Number(this.player1Id));
+                let player1 = playersAlive.find(player => player.id === Number(this.player1Id));
                 if (player1.isMurderer) {
                     this.result = 'The Murderer wins!';
                 }
@@ -133,6 +139,7 @@ Vue.createApp({
             this.selectedPlayerId = playerId;
         },
         async nextRound() {
+            this.determineWinner()
             this.getAllPlayers()
             let alivePlayers = this.Players.filter(player => player.isAlive);
             let votedPlayers = this.Players.filter(player => player.hasVoted);
@@ -190,7 +197,7 @@ Vue.createApp({
             window.location.reload()
         },
         async startCountdown() {
-            const countdownDuration = 5; // Countdown duration in seconds
+            const countdownDuration = 2; // Countdown duration in seconds
             let remainingTime = countdownDuration;
 
             const countdownElement = document.getElementById('countdown');
