@@ -1,6 +1,6 @@
 const baseUrl = 'https://pulsemurdererrest20250508143404-fgb6aucvcwhgbtb6.canadacentral-01.azurewebsites.net/api/players'
-function Sleep(ms){
-    return new Promise(resolve => setTimeout(resolve,ms))
+function Sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms))
 }
 
 Vue.createApp({
@@ -13,7 +13,7 @@ Vue.createApp({
             Winner: false,
             player1Id: null,
             player2Id: null,
-            voteCount: 0,
+            // voteCount: 0,
             voterButtonClicked: false,
             newPlayer: {
                 id: 0,
@@ -21,7 +21,7 @@ Vue.createApp({
                 avatar: "",
                 isMurderer: true,
                 isAlive: false,
-                //clicked: false
+                //hasVoted: false
             },
             message: '',
 
@@ -37,7 +37,7 @@ Vue.createApp({
 
     created() {
         this.getAllPlayers()
-        
+
         // Retrieve the result from localStorage
         this.result = localStorage.getItem('gameResult') || 'No result available';
         console.log('Game result:', this.result)
@@ -52,7 +52,7 @@ Vue.createApp({
     methods: {
         async determineWinner() {
             this.getAllPlayers(baseUrl)
-            
+
             const player1 = this.Players.find(player => player.id === Number(this.player1Id));
             const player2 = this.Players.find(player => player.id === Number(this.player2Id));
 
@@ -65,7 +65,7 @@ Vue.createApp({
                 this.result = 'The Murderer wins!';
             } else {
                 this.result = 'Civilians win!';
-                
+
             }
             //resultat gemmes lokalt - skal nok laves om ift sessions?
             localStorage.setItem('gameResult', this.result)
@@ -74,11 +74,11 @@ Vue.createApp({
         },
         async vote(id) {
             this.Players.forEach(player => {
-                player.clicked = false
+                player.hasVoted = false
             })
 
             const player = this.Players.find(p => p.id === id)
-            player.clicked = !player.clicked
+            player.hasVoted = !player.hasVoted
         },
 
         //Axios methods:
@@ -109,65 +109,62 @@ Vue.createApp({
         },
         vote(playerId) {
             this.Players.forEach(player => {
-                player.clicked = player.id === playerId;
+                player.hasVoted = player.id === playerId;
             });
             this.selectedPlayerId = playerId;
         },
         async nextRound() {
-            const alivePlayers = this.Players.filter(player => player.isAlive);
-            const aliveCount = alivePlayers.length;
+            let alivePlayers = this.Players.filter(player => player.isAlive);
+            let aliveCount = alivePlayers.length;
 
-            const voteCount = this.Players.filter(player => player.clicked).length;
 
-            if (aliveCount === voteCount) {
+            this.getAllPlayers()
+            let votedPlayers = this.Players.filter(player => player.hasVoted);
+            let votedCount = votedPlayers.length
+
+            if (aliveCount === votedCount) {
                 alert("All players have voted. Proceeding to the next round.");
-                this.roundCount++;
-                window.location.reload();
-            }
 
-            try {
-                const response = await axios.put(
-                    `${baseUrl}/${this.selectedPlayerId}`,
-                    { "id": 0, "name": "aaaa", "avatar": null, "isAlive": false, "isMurdere": false }
-                );
+                let voteCount = this.Players.filter(player => player.hasVoted)
+                let count = voteCount.length
+                this.Players = this.getAllPlayers()
 
-                const player = this.Players.find(p => p.id === this.selectedPlayerId);
-                if (player) {
-                    player.isAlive = false;
+                if (aliveCount === count) {
+                    // alert("All players have voted. Proceeding to the next round.");
+
+                    this.roundCount++;
+                    window.location.reload();
+
+                    this.startCountdown()
                 }
-
-                alert("Player has been marked as dead. Proceeding to the next round.");
-            } catch (error) {
-                console.error("Error updating player:", error);
-                alert("Failed to update the player. Please try again.");
             }
         },
         async startGame() {
-            if (this.Players.length === 5) {
+                if (this.Players.length === 5) {
+                    try {
+                        await this.chooseMurderer();
+                        window.location.href = 'sharedPage.html'
+                    }
+                    catch (error) {
+                        alert(error.message)
+                    }
+                }
+            },
+
+        async chooseMurderer() {
                 try {
-                    await this.chooseMurderer();
-                    window.location.href = 'sharedPage.html'
+                    const randomIndex = Math.floor(Math.random() * this.Players.length);
+                    const randomPlayer = this.Players[randomIndex];
+                    randomPlayer.isMurderer = true
+                    await this.updatePlayerRole(randomPlayer)
+                    if (randomPlayer.name !== "") {
+                        //window.location.href = 'sharedPage.html'
+                    }
                 }
                 catch (error) {
                     alert(error.message)
                 }
-            }
             },
-
-        async chooseMurderer() {
-            try {
-                const randomIndex = Math.floor(Math.random() * this.Players.length);
-                const randomPlayer = this.Players[randomIndex];
-                randomPlayer.isMurderer = true
-                await this.updatePlayerRole(randomPlayer)
-                if (randomPlayer.name !== "") {
-                    //window.location.href = 'sharedPage.html'
-                }
-            }
-            catch (error) {
-                alert(error.message)
-            }
-        },
         async resetMurder() {
             for (let i = 0; i < this.Players.length; i++) {
                 try{
@@ -184,29 +181,29 @@ Vue.createApp({
             window.location.reload()
         },
         async startCountdown() {
-            const countdownDuration = 30; // Countdown duration in seconds
-            let remainingTime = countdownDuration;
+                const countdownDuration = 5; // Countdown duration in seconds
+                let remainingTime = countdownDuration;
 
-            const countdownElement = document.getElementById('countdown');
+                const countdownElement = document.getElementById('countdown');
 
-            const timer = setInterval(() => {
-                if (remainingTime <= 0) {
-                    clearInterval(timer);
-                    countdownElement.textContent = "Time's up!";
+                const timer = setInterval(() => {
+                    if (remainingTime <= 0) {
+                        clearInterval(timer);
+                        countdownElement.textContent = "Time's up!";
 
-                    this.nextRound();
-                    const checkInterval = setInterval(() => {
                         this.nextRound();
-                    }, 2000);
-                    return;
-                }
+                        const checkInterval = setInterval(() => {
+                            this.nextRound();
+                        }, 2000);
+                        return;
+                    }
 
-                const minutes = Math.floor(remainingTime / 60);
-                const seconds = remainingTime % 60;
+                    const minutes = Math.floor(remainingTime / 60);
+                    const seconds = remainingTime % 60;
 
-                countdownElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-                remainingTime--;
-            }, 1000);
-        },
-    }
-}).mount('#app');
+                    countdownElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    remainingTime--;
+                }, 1000);
+            },
+        }
+    }).mount('#app');
