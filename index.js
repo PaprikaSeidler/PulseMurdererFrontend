@@ -13,7 +13,7 @@ Vue.createApp({
             Winner: false,
             player1Id: null,
             player2Id: null,
-            voteCount: 0,
+            // voteCount: 0,
             voterButtonClicked: false,
             newPlayer: {
                 id: 0,
@@ -74,11 +74,11 @@ Vue.createApp({
         },
         async vote(id) {
             this.Players.forEach(player => {
-                player.clicked = false
+                player.hasVoted = false
             })
 
             const player = this.Players.find(p => p.id === id)
-            player.clicked = !player.clicked
+            player.hasVoted = !player.hasVoted
         },
 
         //Axios methods:
@@ -109,37 +109,24 @@ Vue.createApp({
         },
         vote(playerId) {
             this.Players.forEach(player => {
-                player.clicked = player.id === playerId;
+                player.hasVoted = player.id === playerId;
             });
             this.selectedPlayerId = playerId;
         },
         async nextRound() {
-            const alivePlayers = this.Players.filter(player => player.isAlive);
-            const aliveCount = alivePlayers.length;
+            let alivePlayers = this.Players.filter(player => player.isAlive);
+            let aliveCount = alivePlayers.length;
 
-            const voteCount = this.Players.filter(player => player.clicked).length;
+            let voteCount = this.Players.filter(player => player.hasVoted)
+            let count = voteCount.length
+            this.Players = this.getAllPlayers()
 
-            if (aliveCount === voteCount) {
-                alert("All players have voted. Proceeding to the next round.");
+            if (aliveCount === count) {
+                // alert("All players have voted. Proceeding to the next round.");
                 this.roundCount++;
+                Sleep(1000)
                 window.location.reload();
-            }
-
-            try {
-                const response = await axios.put(
-                    `${baseUrl}/${this.selectedPlayerId}`,
-                    { "id": 0, "name": "aaaa", "avatar": null, "isAlive": false, "isMurdere": false }
-                );
-
-                const player = this.Players.find(p => p.id === this.selectedPlayerId);
-                if (player) {
-                    player.isAlive = false;
-                }
-
-                alert("Player has been marked as dead. Proceeding to the next round.");
-            } catch (error) {
-                console.error("Error updating player:", error);
-                alert("Failed to update the player. Please try again.");
+                this.startCountdown()
             }
         },
         async startGame() {
@@ -171,7 +158,7 @@ Vue.createApp({
         async resetMurder() {
             for (let i = 0; i < this.Players.length; i++) {
                 try{
-                    Sleep(100)
+                    Sleep(10)
                     const response = await axios.put(
                         `${baseUrl}/${this.Players[i].id}`,
                         {"id": 0, "name": "aaaa", "avatar": "","hasVoted":false,"votesRecieved":0, "isAlive": true, "isMurderer": false }
@@ -182,6 +169,8 @@ Vue.createApp({
                     console.log(error.message)
                 }
             }
+            Sleep(1000)
+            window.location.reload()
         },
         async startCountdown() {
             const countdownDuration = 30; // Countdown duration in seconds
