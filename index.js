@@ -52,9 +52,12 @@ Vue.createApp({
     methods: {
         async determineWinner() {
             this.getAllPlayers(baseUrl)
+            playersAlive = this.Players.filter(player => player.isAlive);
+            if (playersAlive.length === 2) {
 
-            const player1 = this.Players.find(player => player.id === Number(this.player1Id));
-            const player2 = this.Players.find(player => player.id === Number(this.player2Id));
+
+            const player1 = playersAlive.find(player => player.id === Number(this.player1Id));
+            const player2 = playersAlive.find(player => player.id === Number(this.player2Id));
 
             if (!player1 || !player2) {
                 this.result = 'Invalid player IDs. Please try again.';
@@ -65,12 +68,25 @@ Vue.createApp({
                 this.result = 'The Murderer wins!';
             } else {
                 this.result = 'Civilians win!';
-
             }
             //resultat gemmes lokalt - skal nok laves om ift sessions?
             localStorage.setItem('gameResult', this.result)
             //naviger til rasultat-side
             window.location.href = 'gameResult.html'
+        }
+        else if(playersAlive.length === 1 )
+        {
+            const player1 = playersAlive.find(player => player.id === Number(this.player1Id));
+            if (player1.isMurderer)
+            {
+                this.result = 'The Murderer wins!';
+            }
+            else {
+                this.result = 'Civilians win!';
+            }
+            localStorage.setItem('gameResult', this.result)
+            window.location.href = 'gameResult.html'
+        }
         },
         async vote(id) {
             this.Players.forEach(player => {
