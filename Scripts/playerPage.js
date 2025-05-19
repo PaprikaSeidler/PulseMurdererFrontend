@@ -2,7 +2,7 @@ let playerId = localStorage.getItem("playerId");
 let thisPlayer = null;
 
 // Initialize WebSocket connection in the browser
-const ws = new WebSocket('ws://pulsemurderer-bqaqacc5feh8h3aa.northeurope-01.azurewebsites.net:8080');
+const ws = new WebSocket('wss://pulsemurderer-bqaqacc5feh8h3aa.northeurope-01.azurewebsites.net:8080');
 
 ws.onopen = function() {
     console.log('WebSocket connection established');
