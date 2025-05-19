@@ -2,11 +2,12 @@
 <html>
 
 <head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <link href="./Styles/style.css" rel="./styles/stylesheet">
+    <link rel="stylesheet" href="./Styles/style.css">
     <link rel="icon" href="/img/logo.png" type="image/x-icon">
     <title>Pulse Murderer</title>
 </head>
@@ -39,7 +40,7 @@
                     <tr v-for="player in Players" :key="player.id" :class="{'dead': !player.isAlive}">
                         <td>
                             <img src="/img/avatar.png" alt="Avatar" class="rounded-circle"
-                            style="width: 50px; height: 50px;"><br>
+                                style="width: 50px; height: 50px;"><br>
                             {{ player.name }}
                         </td>
                         <td :class="{'dead': !player.isAlive}">
@@ -51,10 +52,11 @@
                         </td>
                     </tr>
                 </tbody>
-                </table>
-            </div>
+            </table>
         </div>
+    </div>
 
-        <script src="./Scripts/index.js"></script>
-    </body>
+    <script src="./Scripts/index.js"></script>
+</body>
+
 </html>
