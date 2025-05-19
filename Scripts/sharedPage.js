@@ -1,5 +1,5 @@
 // sharedPage.js
-const socket = new WebSocket("wss://pulsemurderer-bqaqacc5feh8h3aa.northeurope-01.azurewebsites.net/:8080");
+const socket = new WebSocket("wss://pulsemurderer-bqaqacc5feh8h3aa.northeurope-01.azurewebsites.net:8080");
 
 socket.onmessage = function (event) {
     console.log(event)
