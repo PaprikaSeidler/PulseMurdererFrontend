@@ -29,6 +29,7 @@ wss.on('connection', function connection(ws) {
 });
 
 console.log('WebSocket server running on ws://localhost:8080');
+
 server.on("error", (err) => {
     console.log(`server error:\n${err.stack}`);
     server.close();

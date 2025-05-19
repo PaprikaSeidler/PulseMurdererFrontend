@@ -1,5 +1,5 @@
 const playerId = new URLSearchParams(window.location.search).get("id");
-const ws = new WebSocket("ws://localhost:13000");
+const ws = new WebSocket("ws://pulsemurderer-bqaqacc5feh8h3aa.northeurope-01.azurewebsites.net:8080");
 
 let thisPlayer = null;
 
