@@ -4,20 +4,12 @@ function Sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms))
 }
 
-const ws = new WebSocket("ws://127.0.0.1:8080")
-
-ws.onopen = function(){
-    console.log("Websocket open")
-}
-
-ws.onerror = function(error){
-    console.log(error)
-}
+const ws = new WebSocket("ws://192.168.0.95:8080")
 
 function broadcastData(data){
     console.log(data)
     if(ws.readyState === WebSocket.OPEN){
-        ws.send(JSON.stringify(data))
+        ws.send(data)
     }
     else{
         console.error("Websocket error!",ws.readyState)
@@ -171,15 +163,17 @@ Vue.createApp({
                 localStorage.setItem('roundCount', this.roundCount)
 
                 await Sleep(2000)
+                broadcastData('nextRound')
                 window.location.reload();
                 this.startCountdown()
-                broadcastData(1)
             }
         },
         async startGame() {
             if (this.Players.length === 5) {
                 try {
                     await this.chooseMurderer();
+                    broadcastData('start')
+                    await Sleep(100)
                     window.location.href = 'sharedPage.html'
                 }
                 catch (error) {
@@ -205,8 +199,6 @@ Vue.createApp({
             for (let i = 0; i < this.Players.length; i++) {
                 try {
                     const response = await axios.get(baseUrl)
-                    // `${baseUrl}/${this.Players[i].id}`,
-                    // {"id": 0, "name": "aaaa", "avatar": "","hasVoted":false,"votesRecieved":0, "isAlive": true, "isMurderer": false }
                     const update = await axios.put(`${baseUrl}/${response.data[i].id}`, { "id": 0, "name": "aaaa", "avatar": "", "hasVoted": false, "votesRecieved": 0, "isAlive": true, "isMurderer": false })
                 }
                 catch (error) {
@@ -219,13 +211,14 @@ Vue.createApp({
             window.location.reload()
         },
         async startCountdown() {
-            const countdownDuration = 2; // Countdown duration in seconds
+            const countdownDuration = 5; // Countdown duration in seconds
             let remainingTime = countdownDuration;
 
             const countdownElement = document.getElementById('countdown');
 
             const timer = setInterval(() => {
                 if (remainingTime <= 0) {
+                    broadcastData('time')
                     clearInterval(timer);
                     countdownElement.textContent = "Time's up!";
 

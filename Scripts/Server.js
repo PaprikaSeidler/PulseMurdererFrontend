@@ -9,6 +9,26 @@ const wss = new WebSocket.Server({ server: httpServer });
 
 let udpData = "";
 
+wss.on('connection', function connection(ws) {
+    console.log('New client connected');
+
+    ws.on('message', function incoming(message) {
+        console.log('received: %s', message);
+
+        // Broadcast the message to all clients
+        wss.clients.forEach(function each(client) {
+            if (client !== ws && client.readyState === WebSocket.OPEN) {
+                client.send('reload');
+            }
+        });
+    });
+
+    ws.on('close', function() {
+        console.log('Client disconnected');
+    });
+});
+
+console.log('WebSocket server running on ws://localhost:8080');
 server.on("error", (err) => {
     console.log(`server error:\n${err.stack}`);
     server.close();
@@ -25,7 +45,7 @@ server.on("listening", () => {
     console.log(`server listening ${address.address}:${address.port}`);
 });
 
-server.bind(13000);
+server.bind(8080);
 
 function broadcastData(data) {
     wss.clients.forEach((client) => {

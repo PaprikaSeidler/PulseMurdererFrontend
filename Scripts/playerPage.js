@@ -2,7 +2,7 @@ let playerId = localStorage.getItem("playerId");
 let thisPlayer = null;
 
 // Initialize WebSocket connection in the browser
-const ws = new WebSocket('ws://localhost:8080');
+const ws = new WebSocket('ws://192.168.0.95:8080');
 
 ws.onopen = function() {
     console.log('WebSocket connection established');
@@ -12,9 +12,25 @@ ws.onerror = function(error) {
     console.error('WebSocket error:', error);
 };
 
+ws.onclose = function(){
+    console.log("Websocket closed")
+}
+
 ws.onmessage = function(event){
-    console.log(event)
-    // window.location.reload()
+    if(event.data instanceof Blob){
+        const reader = new FileReader()
+        reader.onload = function(){
+            if(reader.result === 'nextRound' || reader.result === 'start' || reader.result === 'time'){
+                window.location.reload()
+            }
+        }
+        reader.readAsText(event.data)
+    }
+    else{
+        if(event.data === 'nextRound' || event.data === 'start' || event.data === 'time'){
+            window.location.reload()
+        }
+    }
 }
 
 Vue.createApp({

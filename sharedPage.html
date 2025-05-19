@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <link href="style.css" rel="stylesheet">
+    <link href="./Styles/style.css" rel="stylesheet">
     <title>Pulse Murderer</title>
 </head>
 
@@ -43,25 +43,25 @@
                         <td>
                             <div id="data">Connecting...</div>
                             <script>
-                                // Replace with your server's WebSocket URL
-                                const ws = new WebSocket("ws://localhost:8080");
-
-                                ws.onopen = function () {
-                                    document.getElementById("data").innerText = "Connected";
-                                };
-
-                                ws.onmessage = function (event) {
-                                    document.getElementById("data").innerText = event.data.replace(/\.\d+/g, '');
-                                };
-
-                                ws.onerror = function (error) {
-                                    console.log("WebSocket Error: " + error);
-                                    document.getElementById("data").innerText = "Error";
-                                };
-
-                                ws.onclose = function () {
-                                    document.getElementById("data").innerText = "Disconnected";
-                                };
+                                // // Replace with your server's WebSocket URL
+                                // const ws = new WebSocket("ws://localhost:8080");
+                                //
+                                // ws.onopen = function () {
+                                //     document.getElementById("data").innerText = "Connected";
+                                // };
+                                //
+                                // ws.onmessage = function (event) {
+                                //     document.getElementById("data").innerText = event.data.replace(/\.\d+/g, '');
+                                // };
+                                //
+                                // ws.onerror = function (error) {
+                                //     console.log("WebSocket Error: " + error);
+                                //     document.getElementById("data").innerText = "Error";
+                                // };
+                                //
+                                // ws.onclose = function () {
+                                //     document.getElementById("data").innerText = "Disconnected";
+                                // };
                                 </script>
                             </td>
                         </tr>
@@ -70,6 +70,6 @@
             </div>
         </div>
 
-        <script src="index.js"></script>
+        <script src="./Scripts/index.js"></script>
     </body>
 </html>
