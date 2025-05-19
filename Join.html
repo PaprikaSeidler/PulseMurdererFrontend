@@ -1,20 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-        <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-        <title>Title</title>
-    </head>
-    <body>
-        <div id="app" class="container">
-            <h1>Join Game</h1>
-            {{newPlayer}}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="/Styles/style.css">
+    <link rel="icon" href="/img/logo.png" type="image/x-icon">
+    <title>Join game</title>
+</head>
+
+<body class="fullscreen-center">
+    <div id="app" class="container">
+        <div>
+            <img src="/img/bloodTL.png" class="splatter top-left" />
+            <img src="/img/bloodTR.png" class="splatter top-right" />
+            <img src="/img/bloodBL.png" class="splatter bottom-left" />
+            <img src="/img/bloodBR.png" class="splatter bottom-right" />
+        </div>
+
+        <div class="d-flex flex-column justify-content-center align-items-center">
+            <h1 class="">Join Game</h1>
+            <p class="mt-2">Enter name:</p>
             <input v-model="newPlayer.Name" id="myName"></input><br>
             <button class="btn btn-primary mt-2" id="button" @click="joinGame">Join Game</button>
         </div>
-        <script src="./Scripts/Join.js"></script>
-    </body>
+    </div>
+    <script src="./Scripts/Join.js"></script>
+</body>
+
 </html>
