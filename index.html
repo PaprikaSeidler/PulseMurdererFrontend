@@ -8,10 +8,11 @@
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="/img/logo.png" type="image/x-icon">
     <title>Start Game</title>
 </head>
 
-<body>
+<body class="fullscreen-center">
     <div id="appQR" class="d-flex flex-column justify-content-center align-items-center" align="center">
 
 
@@ -30,18 +31,18 @@
                 Code</button>
         </div>
 
-        <div v-if="qrCodeUrl" class="mt-5">
-            <img :src="qrCodeUrl" id="qrCodeImage" alt="QR Code" />
+        <div v-if="qrCodeUrl" class="mt-4">
             <h2>Scan to join</h2>
             <h2>Pulse Murderer!</h2>
+            <img :src="qrCodeUrl" id="qrCodeImage" alt="QR Code" />
         </div>
     </div>
 
     <!--Lobby-->
     <div id="app" class="d-flex flex-column justify-content-center align-items-center ">
-        <div class="content container mt-4">
-            <h1 class="text-center">Waiting for the game to start</h1>
-            <h3 class="text-center mt-5">Players:</h3>
+        <div class="content container mt-2">
+           <!-- <h1 class="text-center">Waiting for the game to start</h1> -->
+            <h2 class="text-center mt-5">Waiting for players...</h2>
             <div class="d-flex flex-wrap justify-content-center">
                 <div v-for="player in Players" :key="player.id" class="text-center m-3">
                     <div>
