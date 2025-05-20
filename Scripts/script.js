@@ -1,5 +1,5 @@
 const playerId = new URLSearchParams(window.location.search).get("id");
-const ws = new WebSocket("ws://localhost:13000");
+const ws = new WebSocket("ws://localhost:3000");
 
 let thisPlayer = null;
 

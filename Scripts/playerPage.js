@@ -1,9 +1,22 @@
+// const http = require("http");
+// const url = require("url");
+// const WebSocket = require("ws");
+
 let playerId = localStorage.getItem("playerId");
 let thisPlayer = null;
 
 // Initialize WebSocket connection in the browser
-const ws = new WebSocket('wss://pulsemurderer-bqaqacc5feh8h3aa.northeurope-01.azurewebsites.net:8080');
+const ws = new WebSocket(`ws://192.168.14.248:8082`);
 
+function broadcastData(data){
+    console.log(data)
+    if(ws.readyState === WebSocket.OPEN){
+        ws.send(data)
+    }
+    else{
+        console.error("Websocket error!",ws.readyState)
+    }
+}
 ws.onopen = function() {
     console.log('WebSocket connection established');
 };
@@ -17,17 +30,18 @@ ws.onclose = function(){
 }
 
 ws.onmessage = function(event){
+    console.log(event)
     if(event.data instanceof Blob){
         const reader = new FileReader()
         reader.onload = function(){
-            if(reader.result === 'nextRound' || reader.result === 'start' || reader.result === 'time'){
+            if(reader.result === 'nextRound' || reader.result === 'start'){
                 window.location.reload()
             }
         }
         reader.readAsText(event.data)
     }
     else{
-        if(event.data === 'nextRound' || event.data === 'start' || event.data === 'time'){
+        if(event.data === 'nextRound' || event.data === 'start'){
             window.location.reload()
         }
     }
@@ -149,6 +163,7 @@ async function vote() {
         body: JSON.stringify({ targetId: parseInt(target) })
     });
     alert("Vote submitted");
+    broadcastData('voted')
     document.getElementById("voteSection").style.display = "none";
 }
 
@@ -160,5 +175,6 @@ async function kill() {
         body: JSON.stringify({ targetId: parseInt(target) })
     });
     alert("Player killed");
+    broadcastData('killed')
     document.getElementById("killSection").style.display = "none";
 }
