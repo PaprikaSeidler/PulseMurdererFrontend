@@ -169,25 +169,26 @@ Vue.createApp({
             this.selectedPlayerId = playerId;
         },
         async nextRound() {
-            await this.getAllPlayers()
+            this.roundCount++;
+            localStorage.setItem('roundCount', this.roundCount)
 
-            let alivePlayers = this.Players.filter(player => player.isAlive);
-            let votedPlayers = alivePlayers.filter(player => player.hasVoted);
+            // Reset votes for next round
+            this.Players.forEach(player => { player.hasVoted = false; });
+            broadcastData('nextRound')
+            await Sleep(2000)
+
+            // await this.getAllPlayers()
+            //
+            // let alivePlayers = this.Players.filter(player => player.isAlive);
+            // let votedPlayers = alivePlayers.filter(player => player.hasVoted);
+            //
+            // if(alivePlayers.length === votedPlayers.length){
+            //     console.log("111")
+            //     // window.location.reload();
+            //     // this.startCountdown()
+            // }
 
             await this.determineWinner()
-
-            if(alivePlayers.length === votedPlayers.length){
-                this.roundCount++;
-                localStorage.setItem('roundCount', this.roundCount)
-
-                // Reset votes for next round
-                this.Players.forEach(player => { player.hasVoted = false; });
-
-                await Sleep(2000)
-                broadcastData('nextRound')
-                window.location.reload();
-               // this.startCountdown()
-            }
         },
         async startGame() {
             if (this.Players.length === 5) {
