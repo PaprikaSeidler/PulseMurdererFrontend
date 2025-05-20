@@ -1,6 +1,6 @@
 const urlParams = new URLSearchParams(window.location.search);
 const playerId = urlParams.get("id");
-const ws = new WebSocket("ws://localhost:13000");
+const ws = new WebSocket("ws://localhost:3000");
 let currentPlayer = null;
 
 ws.onmessage = (event) => {

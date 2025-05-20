@@ -4,7 +4,7 @@ function Sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms))
 }
 
-const ws = new WebSocket("wss://https://pulsemurderer-bqaqacc5feh8h3aa.northeurope-01.azurewebsites.net:8080")
+const ws = new WebSocket("ws://192.168.14.248:8082")
 
 function broadcastData(data){
     console.log(data)
@@ -13,6 +13,24 @@ function broadcastData(data){
     }
     else{
         console.error("Websocket error!",ws.readyState)
+    }
+}
+
+ws.onmessage = function(event){
+    console.log(event)
+    if(event.data instanceof Blob){
+        const reader = new FileReader()
+        reader.onload = function(){
+            if(reader.result === 'voted' || reader.result === 'killed' ||  reader.result  === 'reload' ||reader.result === 'nextRound' || reader.result === 'start' || reader.result === 'time'){
+                window.location.reload()
+            }
+        }
+        reader.readAsText(event.data)
+    }
+    else{
+        if(event.data === 'voted' || event.data === 'killed' || event.data === 'reload' || event.data === 'nextRound' || event.data === 'start' || event.data === 'time'){
+            window.location.reload()
+        }
     }
 }
 
@@ -151,21 +169,24 @@ Vue.createApp({
             this.selectedPlayerId = playerId;
         },
         async nextRound() {
-            this.determineWinner()
-            this.getAllPlayers()
-            let alivePlayers = this.Players.filter(player => player.isAlive);
+            await this.getAllPlayers()
 
-            
-            let votedPlayers = this.Players.filter(player => player.hasVoted);
+            let alivePlayers = this.Players.filter(player => player.isAlive);
+            let votedPlayers = alivePlayers.filter(player => player.hasVoted);
+
+            await this.determineWinner()
 
             if(alivePlayers.length === votedPlayers.length){
                 this.roundCount++;
                 localStorage.setItem('roundCount', this.roundCount)
 
+                // Reset votes for next round
+                this.Players.forEach(player => { player.hasVoted = false; });
+
                 await Sleep(2000)
                 broadcastData('nextRound')
                 window.location.reload();
-                this.startCountdown()
+               // this.startCountdown()
             }
         },
         async startGame() {
