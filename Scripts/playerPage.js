@@ -100,7 +100,7 @@ else {
         });
 }
 
-async function loadPlayer() {
+/* async function loadPlayer() {
     let res = await fetch(`https://pulsemurdererrest20250508143404-fgb6aucvcwhgbtb6.canadacentral-01.azurewebsites.net/api/players/${playerId}`);
     let player = await res.json();
     thisPlayer = player;
@@ -119,6 +119,39 @@ async function loadPlayer() {
 
     if (player.isMurderer && player.isAlive) {
         document.getElementById("killSection").style.display = "block";
+    }
+} */
+async function loadPlayer() {
+    let res = await fetch(`https://pulsemurdererrest20250508143404-fgb6aucvcwhgbtb6.canadacentral-01.azurewebsites.net/api/players/${playerId}`);
+    let player = await res.json();
+    thisPlayer = player;
+
+    let resPlayers = await fetch(`https://pulsemurdererrest20250508143404-fgb6aucvcwhgbtb6.canadacentral-01.azurewebsites.net/api/players/`);
+    let players = await resPlayers.json();
+
+    document.getElementById("playerName").innerText = player.name;
+    document.getElementById("roleInfo").innerText = player.isMurderer ? "🔪 You are the Murderer" : "🧑 Civilian";
+    document.getElementById("status").innerText = player.isAlive ? "Alive" : "Eliminated";
+
+    // Hide both sections by default
+    document.getElementById("voteSection").style.display = "none";
+    document.getElementById("killSection").style.display = "none";
+
+    // CIVILIAN: Show vote if alive and hasn't voted
+    if (!player.isMurderer && player.isAlive && !player.hasVoted) {
+        document.getElementById("voteSection").style.display = "block";
+    }
+
+    // MURDERER: Show vote if alive and hasn't voted
+    if (player.isMurderer && player.isAlive && !player.hasVoted) {
+        document.getElementById("voteSection").style.display = "block";
+    }
+
+    // MURDERER: Show kill section if alive
+    if (player.isMurderer && player.isAlive) {
+        document.getElementById("killSection").style.display = "block";
+        // Enable kill button only if murderer has voted and hasn't killed this round
+        document.getElementById("killButton").disabled = !player.hasVoted || player.hasKilled;
     }
 }
 
