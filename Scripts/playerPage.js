@@ -1,9 +1,12 @@
-// const http = require("http");
-// const url = require("url");
-// const WebSocket = require("ws");
+const baseUrl = 'https://pulsemurdererrest20250508143404-fgb6aucvcwhgbtb6.canadacentral-01.azurewebsites.net/api/players'
+
+function Sleep(ms){
+    return new Promise(resolve => setTimeout(resolve,ms))
+}
 
 let playerId = localStorage.getItem("playerId");
 let thisPlayer = null;
+let alivePlayersLength = 0
 
 // Initialize WebSocket connection in the browser
 const ws = new WebSocket(`ws://192.168.14.248:8082`);
@@ -30,18 +33,18 @@ ws.onclose = function(){
 }
 
 ws.onmessage = function(event){
-    console.log(event)
     if(event.data instanceof Blob){
         const reader = new FileReader()
         reader.onload = function(){
-            if(reader.result === 'nextRound' || reader.result === 'start'){
+            alivePlayersLength = reader.result
+            if(reader.result === 'killed' || reader.result === 'nextRound' || reader.result === 'start'){
                 window.location.reload()
             }
         }
         reader.readAsText(event.data)
     }
     else{
-        if(event.data === 'nextRound' || event.data === 'start'){
+        if(event.data === 'killed' || event.data === 'nextRound' || event.data === 'start'){
             window.location.reload()
         }
     }
@@ -84,7 +87,8 @@ if (!playerId) {
     document.body.innerHTML = "<h3>Error: No player ID provided. Please join using a valid player link.</h3>";
 }
 else {
-    fetch(`https://pulsemurdererrest20250508143404-fgb6aucvcwhgbtb6.canadacentral-01.azurewebsites.net/api/players/${playerId}`)
+    // fetch(`https://pulsemurdererrest20250508143404-fgb6aucvcwhgbtb6.canadacentral-01.azurewebsites.net/api/players/${playerId}`)
+    fetch(`${baseUrl+"/"+playerId}`)
         .then(res => {
             if (!res.ok) throw new Error("Player not found");
             return res.json();
@@ -122,41 +126,44 @@ else {
     }
 } */
 async function loadPlayer() {
-    let res = await fetch(`https://pulsemurdererrest20250508143404-fgb6aucvcwhgbtb6.canadacentral-01.azurewebsites.net/api/players/${playerId}`);
+    // let res = await fetch(`https://pulsemurdererrest20250508143404-fgb6aucvcwhgbtb6.canadacentral-01.azurewebsites.net/api/players/${playerId}`);
+    let res = await fetch(`${baseUrl}/${playerId}`);
     let player = await res.json();
     thisPlayer = player;
 
-    let resPlayers = await fetch(`https://pulsemurdererrest20250508143404-fgb6aucvcwhgbtb6.canadacentral-01.azurewebsites.net/api/players/`);
+    // let resPlayers = await fetch(`https://pulsemurdererrest20250508143404-fgb6aucvcwhgbtb6.canadacentral-01.azurewebsites.net/api/players/`);
+    let resPlayers = await fetch(`${baseUrl}`);
     let players = await resPlayers.json();
 
     document.getElementById("playerName").innerText = player.name;
     document.getElementById("roleInfo").innerText = player.isMurderer ? "🔪 You are the Murderer" : "🧑 Civilian";
     document.getElementById("status").innerText = player.isAlive ? "Alive" : "Eliminated";
 
-    // Hide both sections by default
-    document.getElementById("voteSection").style.display = "none";
+    document.getElementById("voteSection").style.display = "initial";
     document.getElementById("killSection").style.display = "none";
 
-    // CIVILIAN: Show vote if alive and hasn't voted
-    if (!player.isMurderer && player.isAlive && !player.hasVoted) {
-        document.getElementById("voteSection").style.display = "block";
+    console.log(alivePlayersLength)
+    if(!player.isMurderer){
+        document.getElementById("killSection").style.display = "none";
+    }
+    else{
+        if(alivePlayersLength === 4 || alivePlayersLength === 2){
+            document.getElementById("killSection").style.display = "initial";
+        }
     }
 
-    // MURDERER: Show vote if alive and hasn't voted
-    if (player.isMurderer && player.isAlive && !player.hasVoted) {
-        document.getElementById("voteSection").style.display = "block";
+    if(player.hasVoted || !player.isAlive){
+        document.getElementById("voteSection").style.display = "none";
     }
-
-    // MURDERER: Show kill section if alive
-    if (player.isMurderer && player.isAlive) {
-        document.getElementById("killSection").style.display = "block";
-        // Enable kill button only if murderer has voted and hasn't killed this round
-        document.getElementById("killButton").disabled = !player.hasVoted || player.hasKilled;
+    else{
+        if(alivePlayersLength === 5 || alivePlayersLength === 3){
+            document.getElementById("voteSection").style.display = "initial";
+        }
     }
 }
 
 async function loadPlayers() {
-    let res = await fetch(`https://pulsemurdererrest20250508143404-fgb6aucvcwhgbtb6.canadacentral-01.azurewebsites.net/api/players/`);
+    let res = await fetch(`${baseUrl}`);
     let players = await res.json();
     this.Players = res;
 
@@ -175,8 +182,7 @@ async function loadPlayers() {
 }
 
 function loadKillTargets(players) {
-    let killSelect = document.getElementById("killTarget");
-    killSelect.innerHTML = "";
+    let killSelect = document.getElementById("killTarget"); killSelect.innerHTML = "";
 
     players
         .filter(p => p.id != playerId && p.isAlive)
@@ -190,24 +196,29 @@ function loadKillTargets(players) {
 
 async function vote() {
     let target = document.getElementById("voteTarget").value;
-    await fetch(`https://pulsemurdererrest20250508143404-fgb6aucvcwhgbtb6.canadacentral-01.azurewebsites.net/api/players/${playerId}/vote`, {
+    await fetch(`${baseUrl}/${playerId}/vote`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ targetId: parseInt(target) })
     });
     alert("Vote submitted");
-    broadcastData('voted')
     document.getElementById("voteSection").style.display = "none";
+    Sleep(1000000)
+    // await loadPlayer()
+    // window.location.reload()
 }
 
 async function kill() {
     let target = document.getElementById("killTarget").value;
-    await fetch(`https://pulsemurdererrest20250508143404-fgb6aucvcwhgbtb6.canadacentral-01.azurewebsites.net/api/players/${playerId}/kill`, {
+    await fetch(`${baseUrl}/${playerId}/kill`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ targetId: parseInt(target) })
     });
     alert("Player killed");
-    broadcastData('killed')
     document.getElementById("killSection").style.display = "none";
+    await loadPlayer()
+    broadcastData('killed')
+    // Sleep(1000)
+    // window.location.reload()
 }

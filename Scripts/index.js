@@ -62,7 +62,7 @@ Vue.createApp({
             Players: [],
             selectedPlayerId: null,
             result: '',
-            roundCount: 1,
+            roundCount: null,
         };
     },
 
@@ -128,28 +128,14 @@ Vue.createApp({
                 window.location.href = 'gameResult.html'
             }
         },
-        async vote(id) {
-            this.Players.forEach(player => {
-                player.hasVoted = false
-            })
-
-            const player = this.Players.find(p => p.id === id)
-            player.hasVoted = !player.hasVoted
-        },
-
-        //Axios methods:
-        async getPlayers(url) {
+        async getAllPlayers() {
             try {
-                const response = await axios.get(url)
+                const response = await axios.get(baseUrl)
                 this.Players = response.data
             }
             catch {
                 alert(error.message)
             }
-        },
-
-        async getAllPlayers() {
-            this.getPlayers(baseUrl)
         },
         async updatePlayerRole(player) {
             try {
@@ -162,45 +148,60 @@ Vue.createApp({
                 alert(error.message)
             }
         },
-        vote(playerId) {
-            this.Players.forEach(player => {
-                player.hasVoted = player.id === playerId;
-            });
-            this.selectedPlayerId = playerId;
-        },
         async nextRound() {
-            this.roundCount++;
-            localStorage.setItem('roundCount', this.roundCount)
-
             // Reset votes for next round
-            this.Players.forEach(player => { player.hasVoted = false; });
-            broadcastData('nextRound')
-            await Sleep(2000)
+            await this.getAllPlayers()
+            let alivePlayers = []
+            let deadPlayers = []
 
-            // await this.getAllPlayers()
-            //
-            // let alivePlayers = this.Players.filter(player => player.isAlive);
-            // let votedPlayers = alivePlayers.filter(player => player.hasVoted);
-            //
-            // if(alivePlayers.length === votedPlayers.length){
-            //     console.log("111")
-            //     // window.location.reload();
-            //     // this.startCountdown()
-            // }
+            for(let i = 0; i < this.Players.length; i++){
+                if(this.Players[i].isAlive === true){
+                    alivePlayers.push(this.Players[i])
+                }
+                else{
+                    deadPlayers.push(this.Players[i])
+                }
+            }
 
-            await this.determineWinner()
+            this.roundCount = deadPlayers.length
+
+            const response = await axios.get(baseUrl)
+            let tempCol = response.data
+            let votedPlayers = []
+
+            for(let i = 0; i < tempCol.length; i++){
+                if(tempCol[i].hasVoted){
+                    votedPlayers.push(this.Players[i])
+                }
+            }
+
+            console.log(alivePlayers.length,votedPlayers.length)
+
+            if(alivePlayers.length == votedPlayers.length){
+                broadcastData('nextRound')
+                console.log("aaaaaa2")
+                // this.Players.forEach(player => { player.hasVoted = false; });
+                // this.startCountdown()
+                // this.roundCount++;
+                // localStorage.setItem('roundCount', this.roundCount)
+                // window.location.reload();
+                await Sleep(1000)
+                await axios.put(baseUrl+"/clearVotes")
+            }
+
+            // await this.determineWinner()
         },
         async startGame() {
+            try {
+                await this.chooseMurderer();
+                broadcastData('start')
+                await Sleep(100)
+                window.location.href = 'sharedPage.html'
+            }
+            catch (error) {
+                alert(error.message)
+            }
             if (this.Players.length === 5) {
-                try {
-                    await this.chooseMurderer();
-                    broadcastData('start')
-                    await Sleep(100)
-                    window.location.href = 'sharedPage.html'
-                }
-                catch (error) {
-                    alert(error.message)
-                }
             }
         },
         async chooseMurderer() {
@@ -244,7 +245,7 @@ Vue.createApp({
                     clearInterval(timer);
                     countdownElement.textContent = "Time's up!";
 
-                    this.nextRound();
+                    // this.nextRound();
                     const checkInterval = setInterval(() => {
                         this.nextRound();
                     }, 2000);
