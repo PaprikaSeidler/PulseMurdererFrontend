@@ -13,13 +13,13 @@
 </head>
 
 <body class="fullscreen-center">
-    <div id="appQR" class="d-flex flex-column justify-content-center align-items-center" align="center">
+    <div id="appQR" class="d-flex flex-column justify-content-center align-items-center">
         <!-- <div id="app" class="d-flex flex-column justify-content-center align-items-center "> -->
         <div>
-            <img src="/img/bloodTL.png" class="splatter top-left" />
-            <img src="/img/bloodTR.png" class="splatter top-right" />
-            <img src="/img/bloodBL.png" class="splatter bottom-left" />
-            <img src="/img/bloodBR.png" class="splatter bottom-right" />
+            <img src="/img/bloodTL.png" alt="Blood Splatter top left corner" class="splatter top-left">
+            <img src="/img/bloodTR.png" alt="Blood Splatter top right corner" class="splatter top-right">
+            <img src="/img/bloodBL.png" alt="Blood Splatter bottom left corner" class="splatter bottom-left">
+            <img src="/img/bloodBR.png" alt="Blood Splatter top right corner" class="splatter bottom-right">
         </div>
 
         <!--QR-->
@@ -31,7 +31,7 @@
         <div v-if="qrCodeUrl" class="mt-5">
             <h2>Scan to join</h2>
             <h2>Pulse Murderer!</h2>
-            <img :src="qrCodeUrl" id="qrCodeImage" alt="QR Code" />
+            <img :src="qrCodeUrl" id="qrCodeImage" alt="QR Code">
         </div>
     </div>
 
