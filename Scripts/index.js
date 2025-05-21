@@ -61,7 +61,7 @@ Vue.createApp({
             Players: [],
             selectedPlayerId: null,
             result: '',
-            roundCount: null,
+            roundCount: 1,
             deadPlayers: [],
             countDown:null,
             alivePlayersLength:null,
@@ -177,18 +177,13 @@ Vue.createApp({
             console.log(votedPlayers.length,alivePlayers.length)
 
             if(votedPlayers.length === (alivePlayers.length + 1) || this.roundCount === 2 && this.deadPlayers.length === 2){
+                await axios.put(baseUrl+"/clearVotes")
                 broadcastData('nextRound')
                 console.log("aaaaa")
-            //     // this.Players.forEach(player => { player.hasVoted = false; });
-            //     // this.startCountdown()
-            //     // this.roundCount++;
-            //     // localStorage.setItem('roundCount', this.roundCount)
-            //     // window.location.reload();
-                await Sleep(1000)
-                await axios.put(baseUrl+"/clearVotes")
-                this.roundCount = this.deadPlayers.length + 1
-                sessionStorage.clear()
-                sessionStorage.setItem('roundCount',this.roundCount)
+                await Sleep(2000)
+                this.roundCount = this.deadPlayers.length
+                // sessionStorage.clear()
+                // sessionStorage.setItem('roundCount',this.roundCount)
             }
             await this.determineWinner()
         },
@@ -221,6 +216,7 @@ Vue.createApp({
         },
         async resetMurder() {
             for (let i = 0; i < this.Players.length; i++) {
+                this.deadPlayers[i] = null
                 try {
                     const response = await axios.get(baseUrl)
                     const update = await axios.put(`${baseUrl}/${response.data[i].id}`, { "id": 0, "name": "aaaa", "avatar": "", "hasVoted": false, "votesRecieved": 0, "isAlive": true, "isMurderer": false })
@@ -248,13 +244,13 @@ Vue.createApp({
             const timer = setInterval(() => {
                 if (remainingTime <= 0) {
                     countdownElement.textContent = "Time's up!";
-                    // broadcastData('nextRound')
+                    broadcastData('nextRound')
                     // window.location.reload()
 
                     broadcastData('time')
                     clearInterval(timer);
 
-                    this.nextRound();
+                    // this.nextRound();
                     const checkInterval = setInterval(() => {
                         this.nextRound();
                         // broadcastData(alivePlayersLength)
