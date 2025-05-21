@@ -7,7 +7,6 @@ function Sleep(ms) {
 const ws = new WebSocket("ws://192.168.14.248:8082")
 
 function broadcastData(data){
-    console.log(data)
     if(ws.readyState === WebSocket.OPEN){
         ws.send(data)
     }
@@ -17,25 +16,22 @@ function broadcastData(data){
 }
 
 ws.onmessage = function(event){
-    console.log(event)
-    if(event.data instanceof Blob){
-        const reader = new FileReader()
-        reader.onload = function(){
-            if(reader.result === 'voted' || reader.result === 'killed' ||  reader.result  === 'reload' ||reader.result === 'nextRound' || reader.result === 'start' || reader.result === 'time'){
-                window.location.reload()
-            }
-        }
-        reader.readAsText(event.data)
-    }
-    else{
-        if(event.data === 'voted' || event.data === 'killed' || event.data === 'reload' || event.data === 'nextRound' || event.data === 'start' || event.data === 'time'){
-            window.location.reload()
-        }
-    }
+    document.getElementById("data").innerText = event.data
+    // if(event.data instanceof Blob){
+    //     const reader = new FileReader()
+    //     reader.onload = function(){
+    //         if(reader.result === 'voted' || reader.result === 'killed' ||  reader.result  === 'reload' ||reader.result === 'nextRound' || reader.result === 'start' || reader.result === 'time'){
+    //             // window.location.reload()
+    //         }
+    //     }
+    //     reader.readAsText(event.data)
+    // }
+    // else{
+    //     if(event.data === 'voted' || event.data === 'killed' || event.data === 'reload' || event.data === 'nextRound' || event.data === 'start' || event.data === 'time'){
+    //         // window.location.reload()
+    //     }
+    // }
 }
-
-// const piWS = new WebSocket("ws://192.168.14.248:8082");
-
 
 Vue.createApp({
     data() {
@@ -68,6 +64,7 @@ Vue.createApp({
             roundCount: null,
             deadPlayers: [],
             countDown:null,
+            alivePlayersLength:null,
         };
     },
 
@@ -163,34 +160,36 @@ Vue.createApp({
                     alivePlayers.push(this.Players[i])
                 }
                 else{
-                    deadPlayers.push(this.Players[i])
+                    this.deadPlayers.push(this.Players[i])
                 }
             }
 
-            this.roundCount = deadPlayers.length
+            const response = await axios.get(baseUrl)
+            let tempCol = response.data
+            let votedPlayers = []
 
-            // const response = await axios.get(baseUrl)
-            // let tempCol = response.data
-            // let votedPlayers = []
-            //
-            // for(let i = 0; i < tempCol.length; i++){
-            //     if(tempCol[i].hasVoted){
-            //         votedPlayers.push(this.Players[i])
-            //     }
-            // }
+            for(let i = 0; i < tempCol.length; i++){
+                if(tempCol[i].hasVoted){
+                    votedPlayers.push(this.Players[i])
+                }
+            }
 
-            // if(alivePlayers.length == votedPlayers.length){
-            //     broadcastData('nextRound')
-            //     console.log("aaaaaa2")
+            console.log(votedPlayers.length,alivePlayers.length)
+
+            if(votedPlayers.length === (alivePlayers.length + 1) || this.roundCount === 2 && this.deadPlayers.length === 2){
+                broadcastData('nextRound')
+                console.log("aaaaa")
             //     // this.Players.forEach(player => { player.hasVoted = false; });
             //     // this.startCountdown()
             //     // this.roundCount++;
             //     // localStorage.setItem('roundCount', this.roundCount)
             //     // window.location.reload();
-            //     await Sleep(1000)
-            //     await axios.put(baseUrl+"/clearVotes")
-            // }
-
+                await Sleep(1000)
+                await axios.put(baseUrl+"/clearVotes")
+                this.roundCount = this.deadPlayers.length + 1
+                sessionStorage.clear()
+                sessionStorage.setItem('roundCount',this.roundCount)
+            }
             await this.determineWinner()
         },
         async startGame() {
@@ -232,7 +231,7 @@ Vue.createApp({
             }
             this.result = null
             this.result = localStorage.setItem('gameResult',this.result) || 'No result available';
-            sessionStorage.clear()
+            // sessionStorage.clear()
             this.roundCount = 1
             localStorage.setItem('roundCount', this.roundCount)
             Sleep(1000)
@@ -240,7 +239,7 @@ Vue.createApp({
         },
         async startCountdown() {
             // await Sleep(15000)
-            const countdownDuration = 15; // Countdown duration in seconds
+            const countdownDuration = 5; // Countdown duration in seconds
             let remainingTime = countdownDuration;
             countDown = countdownDuration
 
@@ -249,15 +248,16 @@ Vue.createApp({
             const timer = setInterval(() => {
                 if (remainingTime <= 0) {
                     countdownElement.textContent = "Time's up!";
-                    broadcastData('nextRound')
-                    this.nextRound();
-                    window.location.reload()
+                    // broadcastData('nextRound')
+                    // window.location.reload()
 
                     broadcastData('time')
                     clearInterval(timer);
 
+                    this.nextRound();
                     const checkInterval = setInterval(() => {
                         this.nextRound();
+                        // broadcastData(alivePlayersLength)
                     }, 2000);
                     return;
                 }

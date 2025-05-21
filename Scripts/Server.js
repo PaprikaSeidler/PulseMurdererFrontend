@@ -1,6 +1,17 @@
 const http = require("http");
 const url = require("url");
 const WebSocket = require("ws");
+const dgram = require('dgram')
+const server = dgram.createSocket('udp4')
+
+server.on('message',(msg,rinfo) => {
+    console.log(`server got: ${msg}`)
+    broadcastData(msg.toString())
+})
+server.on('listening', () =>{
+    const address = server.address()
+})
+server.bind(8082)
 
 // Create HTTP server
 const httpServer = http.createServer();

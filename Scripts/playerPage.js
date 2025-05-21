@@ -4,9 +4,24 @@ function Sleep(ms){
     return new Promise(resolve => setTimeout(resolve,ms))
 }
 
+let alivePlayers = []
+async function Get(){
+    const response = await axios.get(baseUrl)
+    let data = response.data
+    alivePlayers = []
+
+    if(Array.isArray(data)){
+        for(let i = 0; i < 6; i++){
+            if(data[i] && data[i].isAlive){
+                alivePlayers.push(data[i])
+            }
+        }
+        console.log(alivePlayers.length)
+    }
+}
+
 let playerId = localStorage.getItem("playerId");
 let thisPlayer = null;
-let alivePlayersLength = 0
 
 // Initialize WebSocket connection in the browser
 const ws = new WebSocket(`ws://192.168.14.248:8082`);
@@ -33,10 +48,11 @@ ws.onclose = function(){
 }
 
 ws.onmessage = function(event){
+    Get()
     if(event.data instanceof Blob){
         const reader = new FileReader()
         reader.onload = function(){
-            alivePlayersLength = reader.result
+            alivePlayers.length = reader.result
             if(reader.result === 'killed' || reader.result === 'nextRound' || reader.result === 'start'){
                 window.location.reload()
             }
@@ -141,15 +157,14 @@ async function loadPlayer() {
     document.getElementById("status").innerText = player.isAlive ? "Alive" : "Eliminated";
 
     document.getElementById("voteSection").style.display = "block";
-    document.getElementById("killSection").style.display = "none";
+    document.getElementById("killSection").style.display = "block";
 
-    console.log(alivePlayersLength)
     if(!player.isMurderer){
         document.getElementById("killSection").style.display = "none";
     }
     else{
-        if(alivePlayersLength === 4 || alivePlayersLength === 2){
-            document.getElementById("killSection").style.display = "block";
+        if(alivePlayers.length === 4){
+            document.getElementById("killSection").style.display = "initial";
         }
     }
 
@@ -157,7 +172,7 @@ async function loadPlayer() {
         document.getElementById("voteSection").style.display = "none";
     }
     else{
-        if(alivePlayersLength === 5 || alivePlayersLength === 3){
+        if(alivePlayers.length === 5 || alivePlayers.length === 3){
             document.getElementById("voteSection").style.display = "block";
         }
     }
