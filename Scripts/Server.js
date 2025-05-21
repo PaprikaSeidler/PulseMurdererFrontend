@@ -37,7 +37,7 @@ function broadcastData(data) {
 
 httpServer.on("request", (req, res) => {
   const pathname = url.parse(req.url).pathname;
-  if (pathname === "/") {
+  if (pathname === "./sharedPage.html") {
     res.writeHead(200, { "Content-Type": "text/html" });
     res.end(`
       <!DOCTYPE html>
@@ -49,7 +49,7 @@ httpServer.on("request", (req, res) => {
           <h1>WebSocket Data Display</h1>
           <div id="data"></div>
           <script>
-              const ws = new WebSocket("ws://localhost:8081");
+              const ws = new WebSocket("ws://localhost:8082");
               ws.onmessage = function(event) {
                   document.getElementById("data").innerText = event.data;
               };

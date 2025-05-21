@@ -75,6 +75,7 @@ window.onload = async function () {
 
 // Try to get ID from URL if not in storage
 if (!playerId) {
+    sessionStorage.clear()
     let urlParams = new URLSearchParams(window.location.search);
     playerId = urlParams.get("id");
 
@@ -139,7 +140,7 @@ async function loadPlayer() {
     document.getElementById("roleInfo").innerText = player.isMurderer ? "🔪 You are the Murderer" : "🧑 Civilian";
     document.getElementById("status").innerText = player.isAlive ? "Alive" : "Eliminated";
 
-    document.getElementById("voteSection").style.display = "initial";
+    document.getElementById("voteSection").style.display = "block";
     document.getElementById("killSection").style.display = "none";
 
     console.log(alivePlayersLength)
@@ -148,7 +149,7 @@ async function loadPlayer() {
     }
     else{
         if(alivePlayersLength === 4 || alivePlayersLength === 2){
-            document.getElementById("killSection").style.display = "initial";
+            document.getElementById("killSection").style.display = "block";
         }
     }
 
@@ -157,7 +158,7 @@ async function loadPlayer() {
     }
     else{
         if(alivePlayersLength === 5 || alivePlayersLength === 3){
-            document.getElementById("voteSection").style.display = "initial";
+            document.getElementById("voteSection").style.display = "block";
         }
     }
 }

@@ -34,6 +34,9 @@ ws.onmessage = function(event){
     }
 }
 
+// const piWS = new WebSocket("ws://192.168.14.248:8082");
+
+
 Vue.createApp({
     data() {
         return {
@@ -63,6 +66,8 @@ Vue.createApp({
             selectedPlayerId: null,
             result: '',
             roundCount: null,
+            deadPlayers: [],
+            countDown:null,
         };
     },
 
@@ -152,7 +157,6 @@ Vue.createApp({
             // Reset votes for next round
             await this.getAllPlayers()
             let alivePlayers = []
-            let deadPlayers = []
 
             for(let i = 0; i < this.Players.length; i++){
                 if(this.Players[i].isAlive === true){
@@ -165,31 +169,29 @@ Vue.createApp({
 
             this.roundCount = deadPlayers.length
 
-            const response = await axios.get(baseUrl)
-            let tempCol = response.data
-            let votedPlayers = []
+            // const response = await axios.get(baseUrl)
+            // let tempCol = response.data
+            // let votedPlayers = []
+            //
+            // for(let i = 0; i < tempCol.length; i++){
+            //     if(tempCol[i].hasVoted){
+            //         votedPlayers.push(this.Players[i])
+            //     }
+            // }
 
-            for(let i = 0; i < tempCol.length; i++){
-                if(tempCol[i].hasVoted){
-                    votedPlayers.push(this.Players[i])
-                }
-            }
+            // if(alivePlayers.length == votedPlayers.length){
+            //     broadcastData('nextRound')
+            //     console.log("aaaaaa2")
+            //     // this.Players.forEach(player => { player.hasVoted = false; });
+            //     // this.startCountdown()
+            //     // this.roundCount++;
+            //     // localStorage.setItem('roundCount', this.roundCount)
+            //     // window.location.reload();
+            //     await Sleep(1000)
+            //     await axios.put(baseUrl+"/clearVotes")
+            // }
 
-            console.log(alivePlayers.length,votedPlayers.length)
-
-            if(alivePlayers.length == votedPlayers.length){
-                broadcastData('nextRound')
-                console.log("aaaaaa2")
-                // this.Players.forEach(player => { player.hasVoted = false; });
-                // this.startCountdown()
-                // this.roundCount++;
-                // localStorage.setItem('roundCount', this.roundCount)
-                // window.location.reload();
-                await Sleep(1000)
-                await axios.put(baseUrl+"/clearVotes")
-            }
-
-            // await this.determineWinner()
+            await this.determineWinner()
         },
         async startGame() {
             try {
@@ -228,24 +230,32 @@ Vue.createApp({
                     console.log(error.message)
                 }
             }
+            this.result = null
+            this.result = localStorage.setItem('gameResult',this.result) || 'No result available';
+            sessionStorage.clear()
             this.roundCount = 1
             localStorage.setItem('roundCount', this.roundCount)
             Sleep(1000)
             window.location.reload()
         },
         async startCountdown() {
-            const countdownDuration = 5; // Countdown duration in seconds
+            // await Sleep(15000)
+            const countdownDuration = 15; // Countdown duration in seconds
             let remainingTime = countdownDuration;
+            countDown = countdownDuration
 
             const countdownElement = document.getElementById('countdown');
 
             const timer = setInterval(() => {
                 if (remainingTime <= 0) {
+                    countdownElement.textContent = "Time's up!";
+                    broadcastData('nextRound')
+                    this.nextRound();
+                    window.location.reload()
+
                     broadcastData('time')
                     clearInterval(timer);
-                    countdownElement.textContent = "Time's up!";
 
-                    // this.nextRound();
                     const checkInterval = setInterval(() => {
                         this.nextRound();
                     }, 2000);
