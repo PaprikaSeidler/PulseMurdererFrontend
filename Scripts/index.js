@@ -181,7 +181,7 @@ Vue.createApp({
                 broadcastData('nextRound')
                 console.log("aaaaa")
                 await Sleep(2000)
-                this.roundCount = this.deadPlayers.length
+                this.roundCount++
                 // sessionStorage.clear()
                 // sessionStorage.setItem('roundCount',this.roundCount)
             }
